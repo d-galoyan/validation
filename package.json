@@ -1,0 +1,27 @@
+{
+  "name": "v-for-validation",
+  "version": "0.1.0",
+  "description": "Simple validation",
+  "main": "dist/index",
+  "types": "dist/index",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "link": "yarn link",
+    "unlink": "yarn unlink",
+    "build": "tsc -b tsconfig.json",
+    "build:watch": "tsc -b tsconfig.json --watch",
+    "clean": "rm -rf ./dist"
+  },
+  "devDependencies": {
+    "typescript": "^3.7.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/@myfan/packages/validation.git"
+  },
+  "author": "David Galoyan",
+  "license": "ISC",
+  "gitHead": ""
+}
