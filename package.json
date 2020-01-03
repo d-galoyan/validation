@@ -1,5 +1,5 @@
 {
-  "name": "@dg/validation",
+  "name": "@dgaloyan/validation",
   "version": "0.1.1",
   "description": "Simple validation",
   "main": "dist/index",
