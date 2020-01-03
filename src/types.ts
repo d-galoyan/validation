@@ -1,7 +1,5 @@
 import IValidator        from './rules/IValidator'
 
-export type valueOf<T> = T[keyof T]
-
 export type TOverides = {
     stopOnError?: { [key: string]: boolean }
     messages?: {
@@ -31,8 +29,4 @@ export type TValidators = {
 
 export type TResults<T> = {
     [key in Extract<keyof T, string>]: TResult[]
-}
-
-export type TData<T> = {
-    [key in Extract<keyof T, string>]: valueOf<T>
 }

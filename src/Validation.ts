@@ -104,7 +104,7 @@ class Validation<T> {
                 }
 
                 if (!this.validators[validatorName]) {
-                    throw new Error(`Please provide existing validator name for ${name}`)
+                    throw new RangeError(`Please provide existing validator name for ${name}`)
                 }
 
                 const {validator, errMsg} = this.validators[validatorName]
