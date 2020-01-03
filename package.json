@@ -1,7 +1,7 @@
 {
   "name": "@dgaloyan/validation",
-  "version": "0.1.1",
-  "description": "Simple validation",
+  "version": "0.1.2",
+  "description": "Simple validation written in typescript",
   "main": "dist/index",
   "types": "dist/index",
   "files": [
@@ -12,7 +12,8 @@
     "unlink": "yarn unlink",
     "build": "tsc -b tsconfig.json",
     "build:watch": "tsc -b tsconfig.json --watch",
-    "clean": "rm -rf ./dist"
+    "clean": "rm -rf ./dist",
+    "prepare": "yarn build"
   },
   "devDependencies": {
     "typescript": "^3.7.4"
