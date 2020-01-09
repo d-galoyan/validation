@@ -56,19 +56,19 @@ Here is a list of the validators currently available.
 
 Validator                               | Description
 --------------------------------------- | --------------------------------------
-***bail***                              | bail will stop on first error if provided.
-***required***                          | check if the string or number is not empty.
-**email**                               | check if the string is an email (example@mail.com).
-**includeCapitalLetters**               | check if the string includes capital letter (a-zA-Z).
-**includeLowercaseLetters**             | check if the string includes lowercase letter (a-zA-Z).
-**includeNumber**                       | check if the string includes number.
-**includeSpecialChar**                  | check if the string includes special char.
-**length [: <number>-<number>]**        | check if the string's length is between specified range.<br/><br/> "length:12-54".
-**match [: <str>]**                     | check if the string matches the specified field.<br/><br/> "match:repeatPassword"
-**min [: <number>]**                    | check if the string's length is minimun specified length. <br/><br/> "min:8"
-**max [: <number>]**                    | check if the string's length is maximum specified length. <br/><br/> "max:16"
-**int**                                 | check if the input is only number.
-**string**                              | check if the input is only string.
+***bail***                        | bail will stop on first error if provided.
+***required***                    | check if the string or number is not empty.
+**email**                         | check if the string is an email (example@mail.com).
+**includeCapitalLetters**         | check if the string includes capital letter (a-zA-Z).
+**includeLowercaseLetters**       | check if the string includes lowercase letter (a-zA-Z).
+**includeNumber**                 | check if the string includes number.
+**includeSpecialChar**            | check if the string includes special char.
+**length [: number-number]**      | check if the string's length is between specified range.<br/><br/> "length:12-54".
+**match [: str]**                 | check if the input matches the specified field.<br/><br/> "match:repeatPassword"
+**min [: number]**                | check if the string's length is minimun specified length. <br/><br/> "min:8"
+**max [: number]**                | check if the string's length is maximum specified length. <br/><br/> "max:16"
+**int**                           | check if the input is only number.
+**string**                        | check if the input is only string.
 
 ## Contributing
 
