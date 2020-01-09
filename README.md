@@ -41,8 +41,10 @@ that will contain error message and additional data like min, max.
 
 ```typescript
 type Results = {
-    errMsg : string,
-    additionalData ?: {}    
+    [key : string] : {
+        errMsg : string,
+        additionalData ?: {}   
+     }[]
 }
 ```
 
