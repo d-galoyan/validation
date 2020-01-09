@@ -1,11 +1,13 @@
+type ValidateT = {
+    isValid : boolean,
+    additionalData ?: {
+        [key : string] : string | number
+    }
+}
+
 interface IValidator {
 
-    validate(data : any) : {
-        isValid : boolean,
-        additionalData ?: {
-            [key : string] : string | number
-        }
-    };
+    validate(data : any) : ValidateT | Promise<ValidateT>;
 }
 
 export default IValidator

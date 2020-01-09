@@ -7,7 +7,7 @@ class Min implements IValidator {
 
     validate(data: any) {
         return {
-            isValid :  data.length >= this.min,
+            isValid :  data.toString().length >= this.min,
             additionalData : {
                 min : this.min
             }

@@ -108,7 +108,7 @@ class Validation<T> {
                 }
 
                 const {validator, errMsg} = this.validators[validatorName]
-                const {isValid, additionalData} = await new validator(parsedValidationRules[name][validatorName], data).validate(value.toString())
+                const {isValid, additionalData} = await new validator(parsedValidationRules[name][validatorName], data).validate(value)
                 if (!isValid) {
                     this.results[name].push({
                         errMsg        : messages && messages[validatorName] ? messages[validatorName] : errMsg,

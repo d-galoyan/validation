@@ -7,7 +7,7 @@ class Max implements IValidator {
 
     validate(data: any) {
         return {
-            isValid : data.length <= this.max,
+            isValid : data.toString().length <= this.max,
             additionalData : {
                 max : this.max
             }

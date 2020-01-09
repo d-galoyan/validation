@@ -13,8 +13,11 @@ class Length implements IValidator {
     }
 
     validate(data: string) {
+
+        const strData = toString()
+
         return {
-            isValid       : data.length >= this.min && data.length <= this.max,
+            isValid       : strData.length >= this.min && strData.length <= this.max,
             additionalData: {
                 min: this.min,
                 max: this.max
