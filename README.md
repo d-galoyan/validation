@@ -16,7 +16,7 @@ Install the library with `npm install v-for-validation` or `yarn add v-for-valid
 #### ES6
 
 ```javascript
-import Validation from './src/Validation';
+import Validation from 'v-for-validation';
 
 const validation = new Validation()
 
