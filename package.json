@@ -1,5 +1,5 @@
 {
-  "name": "@dgaloyan/validation",
+  "name": "v-for-validation",
   "version": "0.1.2",
   "description": "Simple validation written in typescript",
   "main": "dist/index",
