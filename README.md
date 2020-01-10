@@ -2,9 +2,10 @@
 
 [![NPM version][npm-image]][npm-url]
 
-Simple, extensible library of validation any kind of data , built with open/closed principle in mind.
+Simple, extensible library for validation any kind of data , <br/>
+built with open/closed principle in mind.
 
-## not only Strings 
+## Not only Strings 
 
 **You can pass any kind of data, just make sure that validator you choose can parse input.**
 
@@ -16,39 +17,66 @@ Install the library with `npm install v-for-validation` or `yarn add v-for-valid
 #### ES6
 
 ```javascript
-import Validation from 'v-for-validation';
-
-const validation = new Validation()
-
-validation.setRules({
-    name : 'required|string',
-    age : 'int',
-    salary : 'bail|int|min:50000|max:100000' 
- })
-
-validation.addOnResultListener((results) => {
-    console.log(results)
-})
-
-validation.validate({
-    name : 'David',
-    age : 28,
-    salary : 40000
-})
+    import {Validation} from 'v-for-validation';
+    
+    const validation = new Validation()
+    
+    validation.setRules({
+        name : 'required|string',
+        age : 'int',
+        salary : 'bail|int|min:50000|max:100000' 
+     })
+    
+    validation.addOnResultListener((results) => {
+        console.log(results)
+    })
+    
+    validation.validate({
+        name : 'David',
+        age : 28,
+        salary : 40000
+    })
 ```
-Results will be an object of arrays with input keys and array of errors
+Results will be an object of arrays with input keys and array of errors <br/>
 that will contain error message and additional data like min, max.
 
 ```typescript
-type Results = {
-    [key : string] : {
-        errMsg : string,
-        additionalData ?: {}   
-     }[]
-}
+    type Results = {
+        [key : string] : {
+            errMsg : string,
+            additionalData ?: {}   
+         }[]
+    }
 ```
 
-## Validators
+Additional data will vary from validator to validator , if it `min` validator ,<br/>
+than additionalData will contain "min" field . Example `
+
+```javascript
+    const result = {
+        min : {
+            errMsg : 'input.must.be.min',
+            additionalData : {
+                min : 8
+            }   
+        }
+    }
+```
+
+errMsg is returned this way to be easy for further translation.
+
+## Overrides
+
+ You can override translations for specific validators.
+ 
+ ```javascript
+    validation.overrides({
+        min : "must.be.other.translation"
+    })
+```
+
+
+## Default Validators
 
 Validators are strings separated with pipes.
 
@@ -56,8 +84,8 @@ Here is a list of the validators currently available.
 
 Validator                               | Description
 --------------------------------------- | --------------------------------------
-***bail***                        | bail will stop on first error if provided.
-***required***                    | check if the string or number is not empty.
+**_bail_**                        | bail will stop on first error if provided.
+**required**                      | check if the string or number is not empty.
 **email**                         | check if the string is an email (example@mail.com).
 **includeCapitalLetters**         | check if the string includes capital letter (a-zA-Z).
 **includeLowercaseLetters**       | check if the string includes lowercase letter (a-zA-Z).
@@ -69,6 +97,80 @@ Validator                               | Description
 **max [: number]**                | check if the string's length is maximum specified length. <br/><br/> "max:16"
 **int**                           | check if the input is only number.
 **string**                        | check if the input is only string.
+
+## Adding Validators
+
+You can also provide your own validator via method.
+```javascript
+    validation.addValidators(validators)
+```
+
+validators object should be TValidators type.
+
+```typescript
+
+    type ValidateT = {
+        isValid : boolean,
+        additionalData ?: {
+            [key : string] : string | number
+        }
+    }
+    
+    interface IValidator {
+    
+        validate(data : any) : ValidateT | Promise<ValidateT>;
+    }
+
+    type TValidators = {
+        [key: string]: {
+            validator: new(...args: any[]) => IValidator,
+            errMsg: string
+        }
+    }
+```
+
+### Examples
+
+```javascript
+    import {Validation} from 'v-for-validation';
+
+    class MyOwnValidator {
+    
+        validate(data) {
+            if(!data) {
+                return {
+                    isValid : false
+                }
+            }
+        }    
+    }
+        
+    const validation = new Validation()
+
+    validation.addValidators({
+        "MyOwnValidator" : {
+            validator : MyOwnValidator,
+            errMsg : 'something.wrong'                
+        }
+    })
+    
+    validation.setRules({
+        name : 'required|string|MyOwnValidator',
+        age : 'int',
+        salary : 'bail|int|min:50000|max:100000' 
+     })
+        
+    validation.validate({
+        name : 'David',
+        age : 28,
+        salary : 40000
+    })
+```
+
+It also serves as override for validator if the same key already exists.<br/>
+If you wanna provide some complex validator syntax like "MyOwnValidator:returnFalse-notRealy*^",<br>
+the strings after " : " will be passed to class constructor as first argument, the second argument will be <br/>
+all input data.
 
 ## Contributing
 
@@ -126,7 +228,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-[npm-url]: https://npmjs.org/package/validator
+[npm-url]: https://npmjs.org/package/v-for-validation
 [npm-image]: http://img.shields.io/npm/v/validator.svg
 
 

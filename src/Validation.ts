@@ -1,5 +1,5 @@
 import {
-    TOverides,
+    TOverrides,
     TResultListener,
     TResults,
     TValidation,
@@ -41,7 +41,7 @@ class Validation<T> {
     listeners: TResultListener<TResults<T>>[] = []
     validation: Record<keyof T, string>
     validators: TValidators = defaultRules
-    configs: TOverides = {}
+    configs: TOverrides = {}
 
     addValidators(validators: TValidators) {
         Object.keys(validators).forEach(validatorName => {
@@ -53,7 +53,7 @@ class Validation<T> {
         return this
     }
 
-    overides(configs: TOverides) {
+    overrides(configs: TOverrides) {
         this.configs = configs
         return this
     }

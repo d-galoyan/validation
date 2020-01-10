@@ -1,6 +1,6 @@
 import IValidator        from './rules/IValidator'
 
-export type TOverides = {
+export type TOverrides = {
     stopOnError?: { [key: string]: boolean }
     messages?: {
         [key: string]: string
