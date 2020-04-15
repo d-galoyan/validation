@@ -2,14 +2,11 @@ import IValidator from './IValidator'
 
 class Match implements IValidator {
 
-    constructor(private matchField: string, private data: { [key: string]: any }) {
-    }
-
-    validate(data: any) {
+    validate(value: any, matchField: string, data: { [key: string]: any }) {
         return {
-            isValid : data === this.data[this.matchField],
+            isValid : value === data[matchField],
             additionalData : {
-                matchField : this.matchField
+                matchField : matchField
             }
         }
     }

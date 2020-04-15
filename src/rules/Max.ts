@@ -2,14 +2,11 @@ import IValidator from "./IValidator";
 
 class Max implements IValidator {
 
-    constructor(private max : number) {
-    }
-
-    validate(data: any) {
+    validate(data: any, max : string) {
         return {
-            isValid : data.toString().length <= this.max,
+            isValid : data.toString().length <= Number(max),
             additionalData : {
-                max : this.max
+                max : max
             }
         }
     }

@@ -21,7 +21,7 @@ Install the library with `npm install v-for-validation` or `yarn add v-for-valid
     
     const validation = new Validation()
     
-    validation.setRules({
+    validation.rules({
         name : 'required|string',
         age : 'int',
         salary : 'bail|int|min:50000|max:100000' 
@@ -115,15 +115,15 @@ validators object should be TValidators type.
             [key : string] : string | number
         }
     }
-    
+
     interface IValidator {
     
-        validate(data : any) : ValidateT | Promise<ValidateT>;
+        validate(data: any, rules: string | undefined, allData: { [key: string]: any }): ValidateT | Promise<ValidateT>;
     }
 
     type TValidators = {
         [key: string]: {
-            validator: new(...args: any[]) => IValidator,
+            validator: IValidator,
             errMsg: string
         }
     }
@@ -149,12 +149,12 @@ validators object should be TValidators type.
 
     validation.addValidators({
         "MyOwnValidator" : {
-            validator : MyOwnValidator,
+            validator : new MyOwnValidator(),
             errMsg : 'something.wrong'                
         }
     })
     
-    validation.setRules({
+    validation.rules({
         name : 'required|string|MyOwnValidator',
         age : 'int',
         salary : 'bail|int|min:50000|max:100000' 

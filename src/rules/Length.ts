@@ -1,26 +1,25 @@
 import IValidator from './IValidator'
 
+type Data = string | number
+
 class Length implements IValidator {
 
-    min: number
-    max: number
-
-    constructor(minMax: string) {
+    validate(data: Data, minMax: string) {
         const minMaxArr = minMax.split('-')
+        const min = Number(minMaxArr[0])
+        const max = Number(minMaxArr[1])
 
-        this.min = Number(minMaxArr[0])
-        this.max = Number(minMaxArr[1])
-    }
+        let strData = data
 
-    validate(data: string) {
-
-        const strData = toString()
+        if (typeof data !== "number") {
+            strData = data.toString().length
+        }
 
         return {
-            isValid       : strData.length >= this.min && strData.length <= this.max,
+            isValid: strData >= min && strData <= max,
             additionalData: {
-                min: this.min,
-                max: this.max
+                min: min,
+                max: max
             }
         }
     }

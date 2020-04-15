@@ -2,14 +2,11 @@ import IValidator from "./IValidator";
 
 class Min implements IValidator {
 
-    constructor(private min : number) {
-    }
-
-    validate(data: any) {
+    validate(data: any, min : string) {
         return {
-            isValid :  data.toString().length >= this.min,
+            isValid :  data.toString().length >= Number(min),
             additionalData : {
-                min : this.min
+                min : min
             }
         }
     }

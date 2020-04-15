@@ -22,7 +22,7 @@ export type TValidation = {
 
 export type TValidators = {
     [key: string]: {
-        validator: new(...args: any[]) => IValidator,
+        validator: IValidator,
         errMsg: string
     }
 }

@@ -2,9 +2,9 @@ import IValidator from './IValidator'
 
 class Email implements IValidator {
 
-    validate(data: any) {
+    validate(data: string) {
         return {
-            isValid : data.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i),
+            isValid : Boolean(data.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)),
         }
     }
 
