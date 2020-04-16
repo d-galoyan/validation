@@ -1,7 +1,7 @@
-import IValidator from './IValidator'
+import Validator from './Validator'
 import {string} from '../utils'
 
-class Required implements IValidator {
+class Required implements Validator {
 
     validate(data: string) {
         return {

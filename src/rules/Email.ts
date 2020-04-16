@@ -1,6 +1,6 @@
-import IValidator from './IValidator'
+import Validator from './Validator'
 
-class Email implements IValidator {
+class Email implements Validator {
 
     validate(data: string) {
         return {

@@ -1,6 +1,6 @@
-import IValidator from './IValidator'
+import Validator from './Validator'
 
-class IncludeLowercaseLetter implements IValidator {
+class IncludeLowercaseLetter implements Validator {
 
     validate(data: string) {
         return {

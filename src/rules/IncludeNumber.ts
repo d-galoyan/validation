@@ -1,6 +1,6 @@
-import IValidator from './IValidator'
+import Validator from './Validator'
 
-class IncludeNumber implements IValidator {
+class IncludeNumber implements Validator {
 
     validate(data: string) {
         return {

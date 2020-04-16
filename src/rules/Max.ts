@@ -1,11 +1,11 @@
-import IValidator from "./IValidator";
+import Validator from "./Validator"
 
-class Max implements IValidator {
+class Max implements Validator {
 
     validate(data: string, max: string) {
         return {
-            isValid: data.toString().length <= Number(max),
-            additionalData: {
+            isValid        : data.toString().length <= Number(max),
+            additionalData : {
                 max: max
             }
         }

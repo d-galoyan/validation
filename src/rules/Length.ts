@@ -1,8 +1,8 @@
-import IValidator from './IValidator'
+import Validator from './Validator'
 
 type Data = string | number
 
-class Length implements IValidator {
+class Length implements Validator {
 
     validate(data: Data, minMax: string) {
         const minMaxArr = minMax.split('-')
@@ -16,10 +16,10 @@ class Length implements IValidator {
         }
 
         return {
-            isValid: strData >= min && strData <= max,
-            additionalData: {
-                min: min,
-                max: max
+            isValid        : strData >= min && strData <= max,
+            additionalData : {
+                min : min,
+                max : max
             }
         }
     }

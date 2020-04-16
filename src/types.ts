@@ -1,30 +1,30 @@
-import IValidator from './rules/IValidator'
+import Validator from './rules/Validator'
 
 export type TOverrides = {
-    stopOnError?: { [key: string]: boolean }
+    stopOnError?: { [key: string]: boolean },
     messages?: {
-        [key: string]: string
-    }
+        [key: string]: string,
+    },
 }
 
 export type TResult = {
     errMsg: string,
     additionalData?: {
-        [key: string]: string | number
-    }
+        [key: string]: string | number,
+    },
 }
 
 export type TResultListener<T> = (result: T) => void
 
 export type TValidation = {
-    [key: string]: string
+    [key: string]: string,
 }
 
 export type TValidators = {
     [key: string]: {
-        validator: IValidator,
-        errMsg: string
-    }
+        validator: Validator,
+        errMsg: string,
+    },
 }
 
 export type TResults<T> = {

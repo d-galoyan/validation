@@ -15,18 +15,18 @@ import Match from './rules/Match'
 
 
 const defaultRules = {
-    required: {validator: new Required(), errMsg: 'must.not.be.empty'},
-    email: {validator: new Email(), errMsg: 'must.be.email'},
-    match: {validator: new Match(), errMsg: 'must.match'},
-    includeCapitalLetter: {validator: new IncludeCapitalLetter(), errMsg: 'must.contain.cap.letter'},
-    includeLowercaseLetter: {validator: new IncludeLowercaseLetter(), errMsg: 'must.contain.low.letter'},
-    includeNumber: {validator: new IncludeNumber(), errMsg: 'must.contain.number'},
-    includeSpecialChar: {validator: new IncludeSpecialChar(), errMsg: 'must.contain.special.char'},
-    length: {validator: new Length(), errMsg: 'must.be.between'},
-    min: {validator: new Min(), errMsg: 'must.be.min'},
-    max: {validator: new Max(), errMsg: 'must.be.max'},
-    string: {validator: new OnlyString(), errMsg: 'must.be.only.string'},
-    int: {validator: new OnlyInteger(), errMsg: 'must.be.only.number'},
+    required               : {validator: new Required(), errMsg: 'must.not.be.empty'},
+    email                  : {validator: new Email(), errMsg: 'must.be.email'},
+    match                  : {validator: new Match(), errMsg: 'must.match'},
+    includeCapitalLetter   : {validator: new IncludeCapitalLetter(), errMsg: 'must.contain.cap.letter'},
+    includeLowercaseLetter : {validator: new IncludeLowercaseLetter(), errMsg: 'must.contain.low.letter'},
+    includeNumber          : {validator: new IncludeNumber(), errMsg: 'must.contain.number'},
+    includeSpecialChar     : {validator: new IncludeSpecialChar(), errMsg: 'must.contain.special.char'},
+    length                 : {validator: new Length(), errMsg: 'must.be.between'},
+    min                    : {validator: new Min(), errMsg: 'must.be.min'},
+    max                    : {validator: new Max(), errMsg: 'must.be.max'},
+    string                 : {validator: new OnlyString(), errMsg: 'must.be.only.string'},
+    int                    : {validator: new OnlyInteger(), errMsg: 'must.be.only.number'},
 }
 
 class Validation<T> {
@@ -40,8 +40,8 @@ class Validation<T> {
     addValidators(validators: TValidators) {
         Object.keys(validators).forEach(validatorName => {
             this.validators[validatorName] = {
-                validator: validators[validatorName].validator,
-                errMsg: validators[validatorName].errMsg
+                validator : validators[validatorName].validator,
+                errMsg    : validators[validatorName].errMsg
             }
         })
         return this
@@ -88,8 +88,8 @@ class Validation<T> {
                 const {isValid, additionalData} = await validator.validate(value, parsedValidationRules[name][validatorName], data)
                 if (!isValid) {
                     this.results[name].push({
-                        errMsg: messages && messages[validatorName] ? messages[validatorName] : errMsg,
-                        additionalData: {
+                        errMsg         : messages && messages[validatorName] ? messages[validatorName] : errMsg,
+                        additionalData : {
                             ...additionalData
                         }
                     })
@@ -112,7 +112,7 @@ class Validation<T> {
         const stopOnError = this.configs.stopOnError
         return Object.entries(validationRules).reduce((acc, [fieldName, rulesString]) => {
             acc[fieldName] = rulesString.split('|').reduce((acc, val) => {
-                let parts = val.split(':')
+                const parts = val.split(':')
                 if (parts[0] === 'bail') {
                     stopOnError[fieldName] = true
                     return acc

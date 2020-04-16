@@ -1,6 +1,6 @@
-import IValidator from './IValidator'
+import Validator from './Validator'
 
-class IncludeSpecialChar implements IValidator {
+class IncludeSpecialChar implements Validator {
 
     validate(data: string) {
         return {

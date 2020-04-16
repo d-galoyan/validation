@@ -1,6 +1,6 @@
-import IValidator from './IValidator'
+import Validator from './Validator'
 
-class IncludeCapitalLetter implements IValidator {
+class IncludeCapitalLetter implements Validator {
 
     validate(data: string) {
         return {

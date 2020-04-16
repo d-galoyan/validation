@@ -1,6 +1,6 @@
-import IValidator from './IValidator'
+import Validator from './Validator'
 
-class OnlyString implements IValidator {
+class OnlyString implements Validator {
 
     validate(data: string) {
         return {
