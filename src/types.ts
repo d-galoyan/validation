@@ -1,4 +1,4 @@
-import IValidator        from './rules/IValidator'
+import IValidator from './rules/IValidator'
 
 export type TOverrides = {
     stopOnError?: { [key: string]: boolean }
@@ -8,9 +8,9 @@ export type TOverrides = {
 }
 
 export type TResult = {
-    errMsg : string,
-    additionalData ?: {
-        [key : string] : string | number
+    errMsg: string,
+    additionalData?: {
+        [key: string]: string | number
     }
 }
 

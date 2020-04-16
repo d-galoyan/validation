@@ -1,10 +1,4 @@
-import {
-    TOverrides,
-    TResultListener,
-    TResults,
-    TValidation,
-    TValidators
-} from './types'
+import {TOverrides, TResultListener, TResults, TValidation, TValidators} from './types'
 import Required from './rules/Required'
 import Email from './rules/Email'
 import IncludeCapitalLetter from './rules/IncludeCapitalLetter'
@@ -68,23 +62,6 @@ class Validation<T> {
         return this
     }
 
-    private parseValidationRules(validationRules: TValidation) {
-        this.configs.stopOnError = {}
-        const stopOnError = this.configs.stopOnError
-        return Object.entries(validationRules).reduce((acc, [fieldName, rulesString]) => {
-            acc[fieldName] = rulesString.split('|').reduce((acc, val) => {
-                let parts = val.split(':')
-                if (parts[0] === 'bail') {
-                    stopOnError[fieldName] = true
-                    return acc
-                }
-                acc[parts[0]] = parts[1]
-                return acc
-            }, {})
-            return acc
-        }, {})
-    }
-
     validate(data: T) {
 
         const parsedValidationRules = this.parseValidationRules(this.validation)
@@ -128,6 +105,23 @@ class Validation<T> {
             .then(() => this.listeners.forEach(func => {
                 func(this.results)
             }))
+    }
+
+    private parseValidationRules(validationRules: TValidation) {
+        this.configs.stopOnError = {}
+        const stopOnError = this.configs.stopOnError
+        return Object.entries(validationRules).reduce((acc, [fieldName, rulesString]) => {
+            acc[fieldName] = rulesString.split('|').reduce((acc, val) => {
+                let parts = val.split(':')
+                if (parts[0] === 'bail') {
+                    stopOnError[fieldName] = true
+                    return acc
+                }
+                acc[parts[0]] = parts[1]
+                return acc
+            }, {})
+            return acc
+        }, {})
     }
 }
 

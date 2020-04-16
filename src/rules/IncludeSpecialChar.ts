@@ -2,9 +2,9 @@ import IValidator from './IValidator'
 
 class IncludeSpecialChar implements IValidator {
 
-    validate(data: any) {
+    validate(data: string) {
         return {
-            isValid       : /[!@#$%^&*()_\-{};':"\\|,.<>?]/.test(data),
+            isValid: /[!@#$%^&*()_\-{};':"\\|,.<>?]/.test(data),
         }
     }
 

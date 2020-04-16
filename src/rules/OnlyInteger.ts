@@ -2,9 +2,9 @@ import IValidator from "./IValidator";
 
 class OnlyInteger implements IValidator {
 
-    validate(data: any) {
+    validate(data: string | number) {
         return {
-            isValid : Number.isInteger(Number(data))
+            isValid: Number.isInteger(Number(data))
         }
     }
 

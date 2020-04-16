@@ -2,9 +2,9 @@ import IValidator from './IValidator'
 
 class IncludeNumber implements IValidator {
 
-    validate(data: any) {
+    validate(data: string) {
         return {
-            isValid       : /\d/.test(data),
+            isValid: /\d/.test(data),
         }
     }
 

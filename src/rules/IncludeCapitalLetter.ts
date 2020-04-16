@@ -2,9 +2,9 @@ import IValidator from './IValidator'
 
 class IncludeCapitalLetter implements IValidator {
 
-    validate(data: any) {
+    validate(data: string) {
         return {
-            isValid       : /[A-Z]/.test(data),
+            isValid: /[A-Z]/.test(data),
         }
     }
 

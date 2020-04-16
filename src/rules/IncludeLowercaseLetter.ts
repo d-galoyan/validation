@@ -2,9 +2,9 @@ import IValidator from './IValidator'
 
 class IncludeLowercaseLetter implements IValidator {
 
-    validate(data: any) {
+    validate(data: string) {
         return {
-            isValid       : /[a-z]/.test(data),
+            isValid: /[a-z]/.test(data),
         }
     }
 
