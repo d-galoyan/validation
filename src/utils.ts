@@ -7,13 +7,3 @@ export const string = {
             || str === 'undefined'
     }
 }
-
-const test = ["error", {
-    name     : 'asd',
-    lastname : "das"
-}]
-
-const asd = "asdasdasd"
-const asdasdasdasdasd = "asdasdasd"
-
-console.log(test, asd, asdasdasdasdasd)
