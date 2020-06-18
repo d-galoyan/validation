@@ -4,7 +4,7 @@ class OnlyString implements Validator {
 
     validate(data: string) {
         return {
-            isValid: /^[a-z\-_.äöüß ]+$/i.test(data)
+            isValid: /^[a-zA-Z\-_.äöüß ]+$/i.test(data)
         }
     }
 
