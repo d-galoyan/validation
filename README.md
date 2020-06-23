@@ -27,7 +27,7 @@ Install the library with `npm install v-for-validation` or `yarn add v-for-valid
         salary : 'bail|int|min:50000|max:100000' 
      })
     
-    validation.addOnResultListener((results) => {
+    validation.onResultListener((results) => {
         console.log(results)
     })
     

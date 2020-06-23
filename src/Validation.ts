@@ -32,7 +32,7 @@ const defaultRules = {
 class Validation<T> {
 
   results: TResults<T>
-  listeners: TResultListener<TResults<T>>
+  listener: TResultListener<TResults<T>>
   validation: Record<keyof T, string>
   validators: TValidators = defaultRules
   configs: TOverrides = {}
@@ -57,8 +57,8 @@ class Validation<T> {
     return this
   }
 
-  addOnResultListener(listener: TResultListener<TResults<T>>) {
-    this.listeners = listener
+  onResultListener(listener: TResultListener<TResults<T>>) {
+    this.listener = listener
     return this
   }
 
@@ -74,9 +74,14 @@ class Validation<T> {
 
       this.results[name] = []
 
+      if (!parsedValidationRules[name].hasOwnProperty("required") && string.isFalsy(value)) {
+        return
+      }
+
       for (const validatorName of Object.keys(parsedValidationRules[name])) {
 
-        if (string.isFalsy(validatorName) || (validatorName !== "required" && string.isFalsy(value))) {
+
+        if (string.isFalsy(validatorName)) {
           return
         }
 
@@ -100,9 +105,18 @@ class Validation<T> {
       }
     })
 
-    Promise
+    return Promise
         .all(allPromises)
-        .then(() => this.listeners(this.results))
+        .then(() => this.listener && this.listener(this.results))
+        .then(() => new Promise<TResults<T>>((resolve, reject) => {
+
+          const hasErrors = Object.keys(this.results).some(fieldName => this.results[fieldName].length > 0)
+
+          if (hasErrors) {
+            return reject(this.results)
+          }
+          return resolve(this.results)
+        }))
   }
 
   private parseValidationRules(validationRules: TValidation) {
