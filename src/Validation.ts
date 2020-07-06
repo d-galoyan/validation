@@ -34,7 +34,7 @@ class Validation<T> {
   results: TResults<T>
   listener: TResultListener<TResults<T>>
   validation: Record<keyof T, string>
-  validators: TValidators = defaultRules
+  validators: TValidators = {...defaultRules}
   configs: TOverrides = {}
 
   addValidators(validators: TValidators) {
