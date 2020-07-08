@@ -74,7 +74,15 @@ class Validation<T> {
 
       this.results[name] = []
 
-      if (!parsedValidationRules[name].hasOwnProperty("required") && string.isFalsy(value)) {
+      if (
+          (!parsedValidationRules[name].hasOwnProperty("required") ||
+              (
+                  typeof parsedValidationRules[name].required === "string" &&
+                      !data[parsedValidationRules[name].required]
+              )
+          ) &&
+          string.isFalsy(value)
+      ) {
         return
       }
 
