@@ -13,7 +13,6 @@ import OnlyInteger from './rules/OnlyInteger'
 import {string} from './utils'
 import Match from './rules/Match'
 
-
 const defaultRules = {
   required: {validator: new Required(), errMsg: 'must.not.be.empty'},
   email: {validator: new Email(), errMsg: 'must.be.email'},
@@ -27,6 +26,32 @@ const defaultRules = {
   max: {validator: new Max(), errMsg: 'must.be.max'},
   string: {validator: new OnlyString(), errMsg: 'must.be.only.string'},
   int: {validator: new OnlyInteger(), errMsg: 'must.be.only.number'},
+}
+
+const shouldContinue = (parsedValidationRules: any, data: any, value: any, name: string) => {
+
+  const hasRequired = parsedValidationRules[name].hasOwnProperty("required")
+
+  if (!hasRequired && string.isFalsy(value)) {
+    return false
+  }
+
+  if (parsedValidationRules[name].required !== undefined) {
+    const reqValue = parsedValidationRules[name].required
+    const parts = reqValue.split("(")
+
+    if (parts.length === 1) {
+      return data[parts[0]]
+    }
+
+    if (parts.length === 2) {
+      const regExp = /\(([^)]+)\)/;
+      const value = regExp.exec(reqValue) || []
+      return data[parts[0]] === value[1]
+    }
+  }
+
+  return true
 }
 
 class Validation<T> {
@@ -70,19 +95,11 @@ class Validation<T> {
 
     this.results = ({} as TResults<T>)
 
-    const allPromises = Object.entries(data).map(async ([name, value]) => {
-
+    const allPromises = Object.keys(parsedValidationRules).map(async (name) => {
+      const value = data[name]
       this.results[name] = []
 
-      if (
-          (!parsedValidationRules[name].hasOwnProperty("required") ||
-              (
-                  typeof parsedValidationRules[name].required === "string" &&
-                      !data[parsedValidationRules[name].required]
-              )
-          ) &&
-          string.isFalsy(value)
-      ) {
+      if (!shouldContinue(parsedValidationRules, data, value, name)) {
         return
       }
 
