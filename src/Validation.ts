@@ -46,8 +46,11 @@ const shouldContinue = (parsedValidationRules: any, data: any, value: any, name:
 
     if (parts.length === 2) {
       const regExp = /\(([^)]+)\)/;
-      const value = regExp.exec(reqValue) || []
-      return data[parts[0]] === value[1]
+      // getting values inside brackets
+      const value = regExp.exec(reqValue)
+      // Here we are splitting values by comma, and checking if any of required values
+      // equal to actual input value.If yes , than the field is required.
+      return value ? value[1].split(",").some(value => data[parts[0]] === value) : false
     }
   }
 
