@@ -1,7 +1,8 @@
 import Validator from './rules/Validator'
 
 export type TOverrides = {
-    stopOnError?: { [key: string]: boolean },
+    stopOnError: { [key: string]: boolean },
+    omitEmpty: { [key: string]: boolean },
     messages?: {
         [key: string]: string,
     },
@@ -30,3 +31,16 @@ export type TValidators = {
 export type TResults<T> = {
     [key in Extract<keyof T, string>]: TResult[]
 }
+
+
+export type GlobalValidator = {
+    name: string,
+    validator: Validator,
+    errMsg: string,
+}
+
+export type ShouldValidate<T> = {
+    shouldValidate: (allData: T) => boolean,
+}
+
+export type ShouldValidateFields<T> = Partial<Record<keyof T, ShouldValidate<T>>>
