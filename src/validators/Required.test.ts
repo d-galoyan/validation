@@ -1,4 +1,4 @@
-import Required from "./Required";
+import Required from "./Required"
 
 const notValid = {
     isValid: false,

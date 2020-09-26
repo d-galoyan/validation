@@ -1,4 +1,4 @@
-import Length from "./Length";
+import Length from "./Length"
 
 const notValid = {
     isValid        : false,

@@ -1,6 +1,6 @@
-import Validation from "./Validation";
-import Validator from "./validators/Validator";
-import {copy} from "./utils";
+import Validation from "./Validation"
+import Validator from "./validators/Validator"
+import {copy} from "./utils"
 
 class TestValidator implements Validator {
     validate() {

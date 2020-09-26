@@ -1,4 +1,4 @@
-import IncludeLowercaseLetter from "./IncludeLowercaseLetter";
+import IncludeLowercaseLetter from "./IncludeLowercaseLetter"
 
 const notValid = {
     isValid: false

@@ -1,4 +1,4 @@
-import Min from "./Min";
+import Min from "./Min"
 
 const notValid = {
     isValid        : false,

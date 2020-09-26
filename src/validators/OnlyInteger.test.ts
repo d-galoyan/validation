@@ -1,4 +1,4 @@
-import OnlyInteger from "./OnlyInteger";
+import OnlyInteger from "./OnlyInteger"
 
 const notValid = {
     isValid: false,

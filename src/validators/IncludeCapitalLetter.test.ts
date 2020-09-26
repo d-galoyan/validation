@@ -1,4 +1,4 @@
-import IncludeCapitalLetter from "./IncludeCapitalLetter";
+import IncludeCapitalLetter from "./IncludeCapitalLetter"
 
 const notValid = {
     isValid: false

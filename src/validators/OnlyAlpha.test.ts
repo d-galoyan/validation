@@ -1,4 +1,4 @@
-import OnlyAlpha from "./OnlyAlpha";
+import OnlyAlpha from "./OnlyAlpha"
 
 const notValid = {
     isValid: false,

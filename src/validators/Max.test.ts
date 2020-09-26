@@ -1,4 +1,4 @@
-import Max from "./Max";
+import Max from "./Max"
 
 const notValid = {
     isValid        : false,

@@ -1,4 +1,4 @@
-import IncludeSpecialChar from "./IncludeSpecialChar";
+import IncludeSpecialChar from "./IncludeSpecialChar"
 
 const notValid = {
     isValid: false

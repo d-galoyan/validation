@@ -1,6 +1,6 @@
-import addGlobalValidators from "./addGlobalValidators";
-import Validator from "./validators/Validator";
-import defaultValidators from "./validators";
+import addGlobalValidators from "./addGlobalValidators"
+import Validator from "./validators/Validator"
+import defaultValidators from "./validators"
 
 class TestValidator implements Validator {
     validate(data: any) {
