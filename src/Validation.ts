@@ -1,64 +1,27 @@
 import {
-  GlobalValidator,
-  ShouldValidateFields,
-  TOverrides,
+  Configs,
   TResultListener,
-  TResults,
-  TValidation,
-  TValidators
+  Results,
+  Validators
 } from './types'
-import Required from './rules/Required'
-import Email from './rules/Email'
-import IncludeCapitalLetter from './rules/IncludeCapitalLetter'
-import IncludeLowercaseLetter from './rules/IncludeLowercaseLetter'
-import IncludeNumber from './rules/IncludeNumber'
-import IncludeSpecialChar from './rules/IncludeSpecialChar'
-import Length from './rules/Length'
-import Min from './rules/Min'
-import Max from './rules/Max'
-import OnlyString from './rules/OnlyString'
-import OnlyInteger from './rules/OnlyInteger'
-import {string} from './utils'
-import Match from './rules/Match'
-
-const defaultValidators = {
-  required               : {validator: new Required(), errMsg: 'must.not.be.empty'},
-  email                  : {validator: new Email(), errMsg: 'must.be.email'},
-  match                  : {validator: new Match(), errMsg: 'must.match'},
-  includeCapitalLetter   : {validator: new IncludeCapitalLetter(), errMsg: 'must.contain.cap.letter'},
-  includeLowercaseLetter : {validator: new IncludeLowercaseLetter(), errMsg: 'must.contain.low.letter'},
-  includeNumber          : {validator: new IncludeNumber(), errMsg: 'must.contain.number'},
-  includeSpecialChar     : {validator: new IncludeSpecialChar(), errMsg: 'must.contain.special.char'},
-  length                 : {validator: new Length(), errMsg: 'must.be.between'},
-  min                    : {validator: new Min(), errMsg: 'must.be.min'},
-  max                    : {validator: new Max(), errMsg: 'must.be.max'},
-  string                 : {validator: new OnlyString(), errMsg: 'must.be.only.string'},
-  int                    : {validator: new OnlyInteger(), errMsg: 'must.be.only.number'},
-}
-
-
-export const addValidators = (validators: GlobalValidator[]) => {
-  validators.forEach(validator => {
-    defaultValidators[validator.name] = {
-      validator : validator.validator,
-      errMsg    : validator.errMsg
-    }
-  })
-}
+import {hasErrors, string} from './utils'
+import defaultValidators from "./validators"
+import parseValidationRules from "./parseValidationRules"
 
 class Validation<T> {
 
-  results: TResults<T>
-  listener: TResultListener<TResults<T>>
+  results: Results<T> = {} as Results<T>
+  listener: TResultListener<Results<T>> = () => {}
   validation: Record<keyof T, string>
-  validators: TValidators = {...defaultValidators}
-  shouldValidateFields: ShouldValidateFields<T> = {}
-  configs: TOverrides = {
-    stopOnError : {},
-    omitEmpty   : {}
+  validators: Validators = {...defaultValidators}
+  configs: Configs<T> = {
+    stopOnError          : {},
+    omitEmpty            : {},
+    messages             : {},
+    shouldValidateFields : {}
   }
 
-  addValidators(validators: TValidators) {
+  addValidators(validators: Validators) {
     Object.keys(validators).forEach(validatorName => {
       this.validators[validatorName] = {
         validator : validators[validatorName].validator,
@@ -68,12 +31,13 @@ class Validation<T> {
     return this
   }
 
-  setShouldValidate(shouldValidateFields: ShouldValidateFields<T>){
-    this.shouldValidateFields = shouldValidateFields
+  shouldValidate(shouldValidateFields: Configs<T>["shouldValidateFields"]){
+    this.configs.shouldValidateFields = shouldValidateFields
+    return this
   }
 
-  overrides(configs: TOverrides) {
-    this.configs = configs
+  messages(messages: Configs<T>["messages"]){
+    this.configs.messages = messages
     return this
   }
 
@@ -82,51 +46,48 @@ class Validation<T> {
     return this
   }
 
-  onResultListener(listener: TResultListener<TResults<T>>) {
+  onResultListener(listener: TResultListener<Results<T>>) {
     this.listener = listener
     return this
   }
 
   validate(data: T) {
 
-    const parsedValidationRules = this.parseValidationRules(this.validation)
-    const stop = this.configs.stopOnError
-    const messages = this.configs.messages
-
-    this.results = ({} as TResults<T>)
-
+    const parsedValidationRules = parseValidationRules(this.validation, this.configs)
     const allPromises = Object.keys(parsedValidationRules).map(async (name) => {
       const value = data[name]
       this.results[name] = []
 
-      if(this.shouldValidateFields[name] && !this.shouldValidateFields[name].shouldValidate(data)){
+      if(
+          (this.configs.shouldValidateFields[name] && !(await this.configs.shouldValidateFields[name].shouldValidate(data)))
+          || (this.configs.omitEmpty[name] && !value)
+      ){
         return
       }
 
       for (const validatorName of Object.keys(parsedValidationRules[name])) {
 
-
-        if (string.isFalsy(validatorName) || (this.configs.omitEmpty[name] && !value)) {
+        if (string.isFalsy(validatorName)) {
           return
         }
 
         if (!this.validators[validatorName]) {
           throw new RangeError(`
-            Please provide existing validator name for ${name}.
-            ${validatorName} doesn't exists!
+          Please provide existing validator name for ${name}. ${validatorName} doesn't exists!
           `)
         }
 
         const {validator, errMsg} = this.validators[validatorName]
         const {isValid, additionalData} = await validator.validate(value, parsedValidationRules[name][validatorName], data)
         if (!isValid) {
+          const messages = this.configs.messages
           this.results[name].push({
-            errMsg         : messages && messages[validatorName] ? messages[validatorName] : errMsg,
+            errMsg         : messages[validatorName] ? messages[validatorName] : errMsg,
             additionalData : {
               ...additionalData
             }
           })
-          if (stop[name]) {
+          if (this.configs.stopOnError[name]) {
             return
           }
         }
@@ -135,35 +96,14 @@ class Validation<T> {
 
     return Promise
         .all(allPromises)
-        .then(() => this.listener && this.listener(this.results))
-        .then(() => new Promise<TResults<T>>((resolve, reject) => {
+        .then(() => this.listener(this.results))
+        .then(() => new Promise<Results<T>>((resolve, reject) => {
 
-          const hasErrors = Object.keys(this.results).some(fieldName => this.results[fieldName].length > 0)
-
-          if (hasErrors) {
+          if (hasErrors(this.results)) {
             return reject(this.results)
           }
           return resolve(this.results)
         }))
-  }
-
-  private parseValidationRules(validationRules: TValidation) {
-    return Object.entries(validationRules).reduce((acc, [fieldName, rulesString]) => {
-      acc[fieldName] = rulesString.split('|').reduce((acc, val) => {
-        const parts = val.split(':')
-        if (parts[0] === 'bail') {
-          this.configs.stopOnError[fieldName] = true
-          return acc
-        }
-        if (parts[0] === 'omitEmpty') {
-          this.configs.omitEmpty[fieldName] = true
-          return acc
-        }
-        acc[parts[0]] = parts[1]
-        return acc
-      }, {})
-      return acc
-    }, {})
   }
 }
 

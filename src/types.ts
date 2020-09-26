@@ -1,11 +1,10 @@
-import Validator from './rules/Validator'
+import Validator from './validators/Validator'
 
-export type TOverrides = {
-    stopOnError: { [key: string]: boolean },
-    omitEmpty: { [key: string]: boolean },
-    messages?: {
-        [key: string]: string,
-    },
+export type Configs<T> = {
+    stopOnError: Partial<{ [key in keyof T]: boolean }>,
+    omitEmpty: Partial<{ [key in keyof T]: boolean }>,
+    messages: Partial<{ [key in keyof T]: string }>,
+    shouldValidateFields: Partial<ShouldValidateFields<T>>,
 }
 
 export type TResult = {
@@ -21,14 +20,14 @@ export type TValidation = {
     [key: string]: string,
 }
 
-export type TValidators = {
+export type Validators = {
     [key: string]: {
         validator: Validator,
         errMsg: string,
     },
 }
 
-export type TResults<T> = {
+export type Results<T> = {
     [key in Extract<keyof T, string>]: TResult[]
 }
 
