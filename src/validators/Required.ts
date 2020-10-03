@@ -3,7 +3,7 @@ import {string} from '../utils'
 
 class Required implements Validator {
 
-    validate(value: any, afterColumn: string | undefined, allData: { [key: string]: any }) {
+    validate(value: string , afterColumn: string | undefined, allData: { [key: string]: any }) {
 
         const isValid = !string.isFalsy(value)
 

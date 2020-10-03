@@ -1,7 +1,7 @@
 import parseValidationRules from "./parseValidationRules"
 import configs from "./mockes/configs"
 import {copy} from "./utils"
-import Validation from "./Validation";
+import Validation from "./Validation"
 
 describe('parseValidationRules', () => {
     it('should return empty object', () => {

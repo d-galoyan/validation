@@ -38,6 +38,7 @@ describe('Required', () => {
     it('should be valid', () => {
         const RequiredValidator = new Required()
         expect(RequiredValidator.validate("a", undefined, {})).toStrictEqual(valid)
+        expect(RequiredValidator.validate(5, undefined, {})).toStrictEqual(valid)
         expect(RequiredValidator.validate("", matchRuleOnlyField, allDataEmpty)).toStrictEqual(valid)
         expect(RequiredValidator.validate("", matchRuleFieldWithValues, allDataEmpty)).toStrictEqual(valid)
         expect(RequiredValidator.validate("", matchRuleFieldWithValues, {name: "SomethingElse"})).toStrictEqual(valid)

@@ -1,5 +1,5 @@
 import {Configs, TValidation} from "./types"
-import Validation from "./Validation";
+import Validation from "./Validation"
 
 const parseValidationRules = <T>(validationRules: TValidation<T>, configs: Configs<T>) => {
     return Object.entries(validationRules).reduce((acc, [fieldName, rules]) => {

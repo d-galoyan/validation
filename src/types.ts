@@ -1,5 +1,5 @@
 import Validator from './validators/Validator'
-import Validation from "./Validation";
+import Validation from "./Validation"
 
 export type Configs<T> = {
     stopOnError: Partial<{ [key in keyof T]: boolean }>,
