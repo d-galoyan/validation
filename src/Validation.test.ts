@@ -33,15 +33,15 @@ describe("Validation", () => {
                 errMsg    : "error message"
             }
         })
-        expect(validation.validators["TestValidator"]).toBeDefined()
+        expect(validation["validators"]["TestValidator"]).toBeDefined()
     })
 
     it("Should set shouldValidate", () => {
         const validation = new Validation()
         validation.shouldValidate({
-            name: { validate: () => true}
+            name: {validate: () => true}
         })
-        expect(validation.configs.shouldValidateFields["name"]).toBeDefined()
+        expect(validation["configs"].shouldValidateFields["name"]).toBeDefined()
     })
 
     it("Should set messages", () => {
@@ -50,8 +50,8 @@ describe("Validation", () => {
             int  : "some other message",
             int2 : "some other message",
         })
-        expect(validation.configs.messages["int"]).toBeDefined()
-        expect(validation.configs.messages["int2"]).toBeDefined()
+        expect(validation["configs"].messages["int"]).toBeDefined()
+        expect(validation["configs"].messages["int2"]).toBeDefined()
     })
 
     it("Messages should be overridden", async () => {
@@ -83,7 +83,7 @@ describe("Validation", () => {
             console.log(res)
         }
         validation.onResultListener(testListener)
-        expect(validation.listener).toStrictEqual(testListener)
+        expect(validation["listener"]).toStrictEqual(testListener)
     })
 
     it("Should Not fail", async () => {
@@ -123,7 +123,7 @@ describe("Validation", () => {
     it("should not validate", async () => {
         const validation = new Validation()
         validation.shouldValidate({
-            name: { shouldValidate: async () => false}
+            name: {shouldValidate: async () => false}
         })
         validation.rules({
             name: "required"
@@ -136,7 +136,7 @@ describe("Validation", () => {
     it("should validate", async () => {
         const validation = new Validation()
         validation.shouldValidate({
-            name: { shouldValidate: async () => true}
+            name: {shouldValidate: async () => true}
         })
         validation.rules({
             name: "required"
@@ -146,7 +146,7 @@ describe("Validation", () => {
             .catch(() => expect(true).toBe(true))
     })
 
-    it("shout not validate if omtEmpty presents", async () => {
+    it("should not validate if omtEmpty presents", async () => {
         const validation = new Validation()
         validation.rules({
             name: "omitEmpty|required|int"
@@ -185,7 +185,7 @@ describe("Validation", () => {
             .then(() => expect(true).toBe(false))
             .catch(err => {
                 expect(err.name).toStrictEqual([reqErrObj])
-        })
+            })
     })
 
     it("shout to not stop on error", async () => {
@@ -198,5 +198,69 @@ describe("Validation", () => {
             .catch(err => {
                 expect(err.name).toStrictEqual([reqErrObj, intErrObj])
             })
+    })
+
+    it("Nested object validation", async () => {
+        type User = {
+            name: string,
+            person: {
+                salary: number,
+                address : {
+                    street   : string,
+                    building : number,
+                    apt      : number,
+                },
+            },
+        }
+
+        const userValidation = new Validation<User>()
+        const addressValidation = new Validation<User["person"]["address"]>().rules({
+            street   : "required",
+            building : "required",
+            apt      : "required"
+        })
+        const personValidation = new Validation<User["person"]>().rules({
+            salary  : "required",
+            address : addressValidation
+        })
+
+        userValidation.rules({
+            name   : "required",
+            person : personValidation
+        })
+
+        await userValidation.validate({
+            name   : "",
+            person : {
+                salary  : 0,
+                address : {
+                    street   : "Shiraz",
+                    building : 44,
+                    apt      : 0
+                }
+            }
+        })
+            .then(() => expect(true).toBe(false))
+            .catch(err => {
+                expect(err.name).toStrictEqual([reqErrObj])
+                expect(err.person).toStrictEqual([{
+                    salary  : [reqErrObj],
+                    address : [{apt: [reqErrObj], building: [], street: []}]
+                }])
+            })
+
+        await userValidation.validate({
+            name   : "David",
+            person : {
+                salary  : 10,
+                address : {
+                    street   : "Shiraz",
+                    building : 44,
+                    apt      : 10
+                }
+            }
+        })
+            .then(() => expect(true).toBe(true))
+            .catch(() => expect(true).toBe(false))
     })
 })

@@ -1,4 +1,5 @@
 import Validator from './validators/Validator'
+import Validation from "./Validation";
 
 export type Configs<T> = {
     stopOnError: Partial<{ [key in keyof T]: boolean }>,
@@ -16,8 +17,8 @@ export type TResult = {
 
 export type TResultListener<T> = (result: T) => void
 
-export type TValidation = {
-    [key: string]: string,
+export type TValidation<T> = {
+    [key: string]: string | Validation<T[keyof T]>,
 }
 
 export type Validators = {

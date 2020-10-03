@@ -1,8 +1,13 @@
 import {Configs, TValidation} from "./types"
+import Validation from "./Validation";
 
-const parseValidationRules = <T>(validationRules: TValidation, configs: Configs<T>) => {
-    return Object.entries(validationRules).reduce((acc, [fieldName, rulesString]) => {
-        acc[fieldName] = rulesString.split('|').reduce((acc, val) => {
+const parseValidationRules = <T>(validationRules: TValidation<T>, configs: Configs<T>) => {
+    return Object.entries(validationRules).reduce((acc, [fieldName, rules]) => {
+        if(rules instanceof Validation){
+            acc[fieldName] = rules
+            return acc
+        }
+        acc[fieldName] = rules.split('|').reduce((acc, val) => {
             const parts = val.split(':')
             if (parts[0] === 'bail') {
                 configs.stopOnError[fieldName] = true

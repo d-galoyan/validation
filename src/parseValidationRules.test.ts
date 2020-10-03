@@ -1,6 +1,7 @@
 import parseValidationRules from "./parseValidationRules"
 import configs from "./mockes/configs"
 import {copy} from "./utils"
+import Validation from "./Validation";
 
 describe('parseValidationRules', () => {
     it('should return empty object', () => {
@@ -45,6 +46,30 @@ describe('parseValidationRules', () => {
                 min       : "8",
                 testRule2 : "testMatch"
             }
+        })
+    })
+
+    it('should parse correctly if validation rule is Validation instance', () => {
+        const validationInstance = new Validation()
+        const testRulesObj = {
+            name     : "required|min:9|max:16|string|testRule",
+            lastname : "min:8|testRule2:testMatch",
+            validationInstance,
+        }
+        const rules = parseValidationRules(testRulesObj, configs)
+        expect(rules).toStrictEqual({
+            name: {
+                required : undefined,
+                min      : "9",
+                max      : "16",
+                string   : undefined,
+                testRule : undefined
+            },
+            lastname: {
+                min       : "8",
+                testRule2 : "testMatch"
+            },
+            validationInstance
         })
     })
 })

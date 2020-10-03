@@ -10,18 +10,18 @@ import parseValidationRules from "./parseValidationRules"
 
 class Validation<T> {
 
-  results: Results<T> = {} as Results<T>
-  listener: TResultListener<Results<T>> = () => {}
-  validation: Record<keyof T, string>
-  validators: Validators = {...defaultValidators}
-  configs: Configs<T> = {
+  private readonly results: Results<T> = {} as Results<T>
+  private listener: TResultListener<Results<T>> = () => {}
+  private validationRules: Record<keyof T, string |  Validation<T[keyof T]>>
+  private readonly validators: Validators = {...defaultValidators}
+  private readonly configs: Configs<T> = {
     stopOnError          : {},
     omitEmpty            : {},
     messages             : {},
     shouldValidateFields : {}
   }
 
-  addValidators(validators: Validators) {
+  addValidators(validators: Validators) : Validation<T> {
     Object.keys(validators).forEach(validatorName => {
       this.validators[validatorName] = {
         validator : validators[validatorName].validator,
@@ -31,29 +31,29 @@ class Validation<T> {
     return this
   }
 
-  shouldValidate(shouldValidateFields: Configs<T>["shouldValidateFields"]){
+  shouldValidate(shouldValidateFields: Configs<T>["shouldValidateFields"]) : Validation<T> {
     this.configs.shouldValidateFields = shouldValidateFields
     return this
   }
 
-  messages(messages: Configs<T>["messages"]){
+  messages(messages: Configs<T>["messages"]) : Validation<T> {
     this.configs.messages = messages
     return this
   }
 
-  rules(validation: Record<keyof T, string>) {
-    this.validation = validation
+  rules(validation: Record<keyof T, string | Validation<T[keyof T]>>) : Validation<T> {
+    this.validationRules = validation
     return this
   }
 
-  onResultListener(listener: TResultListener<Results<T>>) {
+  onResultListener(listener: TResultListener<Results<T>>) : Validation<T> {
     this.listener = listener
     return this
   }
 
-  validate(data: T) {
+  validate(data: T) : Promise<Results<T>>{
 
-    const parsedValidationRules = parseValidationRules(this.validation, this.configs)
+    const parsedValidationRules = parseValidationRules(this.validationRules, this.configs)
     const allPromises = Object.keys(parsedValidationRules).map(async (name) => {
       const value = data[name]
       this.results[name] = []
@@ -66,6 +66,10 @@ class Validation<T> {
       }
 
       for (const validatorName of Object.keys(parsedValidationRules[name])) {
+        if(parsedValidationRules[name] instanceof Validation){
+          await parsedValidationRules[name].validate(value).catch((err: any) => this.results[name].push(err))
+          break
+        }
 
         if (string.isFalsy(validatorName)) {
           return
