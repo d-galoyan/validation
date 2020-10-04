@@ -1,5 +1,6 @@
 type ValidateT = {
     readonly isValid: boolean,
+    readonly errMsg ?: string,
     readonly additionalData?: {
         [key: string]: string | number,
     },

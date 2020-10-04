@@ -4,7 +4,6 @@ import Validation from "./Validation"
 export type Configs<T> = {
     stopOnError: Partial<{ [key in keyof T]: boolean }>,
     omitEmpty: Partial<{ [key in keyof T]: boolean }>,
-    messages: Partial<{ [key in keyof T]: string }>,
     shouldValidateFields: Partial<ShouldValidateFields<T>>,
 }
 
@@ -31,7 +30,6 @@ export type Validators = {
 export type Results<T> = {
     [key in Extract<keyof T, string>]: TResult[]
 }
-
 
 export type GlobalValidator = {
     name: string,

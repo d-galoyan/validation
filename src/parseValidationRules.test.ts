@@ -1,6 +1,6 @@
 import parseValidationRules from "./parseValidationRules"
 import configs from "./mockes/configs"
-import {copy} from "./utils"
+import {object} from "./utils"
 import Validation from "./Validation"
 
 describe('parseValidationRules', () => {
@@ -13,7 +13,7 @@ describe('parseValidationRules', () => {
         const testRulesObj = {
             name: "bail|required"
         }
-        const copiedConfigs = copy(configs)
+        const copiedConfigs = object.copy(configs)
         parseValidationRules(testRulesObj, copiedConfigs)
         expect(copiedConfigs.stopOnError).toStrictEqual({name: true})
     })
@@ -23,7 +23,7 @@ describe('parseValidationRules', () => {
             name     : "omitEmpty|required",
             lastname : "min:8"
         }
-        const copiedConfigs = copy(configs)
+        const copiedConfigs = object.copy(configs)
         parseValidationRules(testRulesObj, copiedConfigs)
         expect(copiedConfigs.omitEmpty).toStrictEqual({name: true})
     })

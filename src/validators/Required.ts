@@ -1,11 +1,11 @@
 import Validator from './Validator'
-import {string} from '../utils'
+import {getNestedValue, string} from '../utils'
 
 class Required implements Validator {
 
-    validate(value: string , afterColumn: string | undefined, allData: { [key: string]: any }) {
+    validate(value: string | number, afterColumn: string | undefined, allData: { [key: string]: any }) {
 
-        const isValid = !string.isFalsy(value)
+        const isValid = !string.isFalsy(value as string)
 
         if(!afterColumn){
             return { isValid }
@@ -13,7 +13,7 @@ class Required implements Validator {
 
         const parts = afterColumn.split("(")
 
-        if (parts.length === 1 &&  allData[parts[0]]) {
+        if (parts.length === 1 &&  getNestedValue(parts[0], allData)) {
             return { isValid }
         }
 
@@ -28,7 +28,7 @@ class Required implements Validator {
                 valueInsideBrackets
                     ? valueInsideBrackets[1]
                         .split(",")
-                        .some(valueInsideBracket => allData[parts[0]] === valueInsideBracket)
+                        .some(valueInsideBracket => getNestedValue(parts[0], allData) === valueInsideBracket)
                     : false
             if(isValueMatch){
                 return { isValid }

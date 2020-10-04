@@ -7,14 +7,12 @@ const notValid = {
     }
 }
 
-
 const valid = {
     isValid        : true,
     additionalData : {
         min: "3"
     }
 }
-
 
 const testMatchRule = "3"
 

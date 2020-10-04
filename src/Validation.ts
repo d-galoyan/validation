@@ -4,7 +4,7 @@ import {
   Results,
   Validators
 } from './types'
-import {hasErrors, string} from './utils'
+import {cloneValidators, hasErrors, string} from './utils'
 import defaultValidators from "./validators"
 import parseValidationRules from "./parseValidationRules"
 
@@ -13,13 +13,13 @@ class Validation<T> {
   private readonly results: Results<T> = {} as Results<T>
   private listener: TResultListener<Results<T>> = () => {}
   private validationRules: Record<keyof T, string |  Validation<T[keyof T]>>
-  private readonly validators: Validators = {...defaultValidators}
+  private readonly validators: Validators = cloneValidators(defaultValidators)
   private readonly configs: Configs<T> = {
     stopOnError          : {},
     omitEmpty            : {},
-    messages             : {},
     shouldValidateFields : {}
   }
+  private data : T
 
   addValidators(validators: Validators) : Validation<T> {
     Object.keys(validators).forEach(validatorName => {
@@ -36,8 +36,10 @@ class Validation<T> {
     return this
   }
 
-  messages(messages: Configs<T>["messages"]) : Validation<T> {
-    this.configs.messages = messages
+  messages(messages: {[key in keyof Validators] : string}) : Validation<T> {
+    Object.keys(messages).forEach(validatorName => {
+      this.validators[validatorName].errMsg = messages[validatorName]
+    })
     return this
   }
 
@@ -51,7 +53,8 @@ class Validation<T> {
     return this
   }
 
-  validate(data: T) : Promise<Results<T>>{
+  validate(data: T, allData ?: T) : Promise<Results<T>> {
+    this.data = allData ? allData : data
 
     const parsedValidationRules = parseValidationRules(this.validationRules, this.configs)
     const allPromises = Object.keys(parsedValidationRules).map(async (name) => {
@@ -67,7 +70,7 @@ class Validation<T> {
 
       for (const validatorName of Object.keys(parsedValidationRules[name])) {
         if(parsedValidationRules[name] instanceof Validation){
-          await parsedValidationRules[name].validate(value).catch((err: any) => this.results[name].push(err))
+          await parsedValidationRules[name].validate(value, this.data).catch((err: any) => this.results[name].push(err))
           break
         }
 
@@ -81,13 +84,12 @@ class Validation<T> {
           `)
         }
 
-        const {validator, errMsg} = this.validators[validatorName]
-        const {isValid, additionalData} = await validator.validate(value, parsedValidationRules[name][validatorName], data)
+        const {validator, errMsg : defaultErrMsg} = this.validators[validatorName]
+        const {isValid, errMsg = defaultErrMsg, additionalData } = await validator.validate(value, parsedValidationRules[name][validatorName], this.data)
         if (!isValid) {
-          const messages = this.configs.messages
           this.results[name].push({
-            errMsg         : messages[validatorName] ? messages[validatorName] : errMsg,
-            additionalData : {
+            errMsg,
+            additionalData: {
               ...additionalData
             }
           })

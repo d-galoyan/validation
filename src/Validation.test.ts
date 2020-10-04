@@ -1,10 +1,14 @@
 import Validation from "./Validation"
 import Validator from "./validators/Validator"
-import {copy} from "./utils"
+import {object} from "./utils"
 
 class TestValidator implements Validator {
+    isValid : boolean
+    constructor(pass ?: boolean) {
+        this.isValid = pass === undefined ? true : pass
+    }
     validate() {
-        return {isValid: true}
+        return {isValid: this.isValid, errMsg: "Internal error message"}
     }
 }
 
@@ -24,6 +28,25 @@ const intErrObj = {
     additionalData : {}
 }
 
+const minErrObj = {
+    errMsg         : 'must.be.min',
+    additionalData : {
+        min: "7"
+    }
+}
+
+type User = {
+    name: string,
+    person: {
+        salary: number,
+        address: {
+            street: string,
+            building: number,
+            apt: number,
+        },
+    },
+}
+
 describe("Validation", () => {
     it("Should add validator", () => {
         const validation = new Validation()
@@ -36,30 +59,11 @@ describe("Validation", () => {
         expect(validation["validators"]["TestValidator"]).toBeDefined()
     })
 
-    it("Should set shouldValidate", () => {
-        const validation = new Validation()
-        validation.shouldValidate({
-            name: {validate: () => true}
-        })
-        expect(validation["configs"].shouldValidateFields["name"]).toBeDefined()
-    })
-
-    it("Should set messages", () => {
-        const validation = new Validation()
-        validation.messages({
-            int  : "some other message",
-            int2 : "some other message",
-        })
-        expect(validation["configs"].messages["int"]).toBeDefined()
-        expect(validation["configs"].messages["int2"]).toBeDefined()
-    })
-
-    it("Messages should be overridden", async () => {
+    it("Default Messages should be overridden", async () => {
         const validation = new Validation()
         validation.messages({
             int: "some int error message",
-        })
-        validation.rules({
+        }).rules({
             name: "int"
         })
         await validation.validate({
@@ -70,6 +74,35 @@ describe("Validation", () => {
                 expect(err.name).toStrictEqual([
                     {
                         errMsg         : 'some int error message',
+                        additionalData : {}
+                    }
+                ])
+            })
+
+    })
+
+    it("Validator error message should be used, instead of default one", async () => {
+        const validation = new Validation()
+        validation
+            .addValidators({
+                TestValidator: {
+                    validator : new TestValidator(false),
+                    errMsg    : "error message"
+                }
+            })
+            .messages({
+                TestValidator: "some int error message",
+            }).rules({
+            name: "TestValidator"
+        })
+        await validation.validate({
+            name: "asd"
+        })
+            .then(() => expect(true).toBe(false))
+            .catch(err => {
+                expect(err.name).toStrictEqual([
+                    {
+                        errMsg         : 'Internal error message',
                         additionalData : {}
                     }
                 ])
@@ -104,14 +137,14 @@ describe("Validation", () => {
             lastname : "required|string",
             salary   : "int",
         })
-        const copied = copy(testData)
+        const copied = object.copy(testData)
         copied.salary = ""
         await validation.validate(copied)
             .catch((err) => {
                 expect(err.salary).toStrictEqual([intErrObj])
             })
 
-        const copied2 = copy(testData)
+        const copied2 = object.copy(testData)
         copied2.name = ""
         await validation.validate(copied2)
             .catch((err) => {
@@ -124,8 +157,7 @@ describe("Validation", () => {
         const validation = new Validation()
         validation.shouldValidate({
             name: {shouldValidate: async () => false}
-        })
-        validation.rules({
+        }).rules({
             name: "required"
         })
         await validation.validate({})
@@ -137,8 +169,7 @@ describe("Validation", () => {
         const validation = new Validation()
         validation.shouldValidate({
             name: {shouldValidate: async () => true}
-        })
-        validation.rules({
+        }).rules({
             name: "required"
         })
         await validation.validate({})
@@ -200,22 +231,11 @@ describe("Validation", () => {
             })
     })
 
-    it("Nested object validation", async () => {
-        type User = {
-            name: string,
-            person: {
-                salary: number,
-                address : {
-                    street   : string,
-                    building : number,
-                    apt      : number,
-                },
-            },
-        }
+    it("Nested object validation should fail", async () => {
 
         const userValidation = new Validation<User>()
         const addressValidation = new Validation<User["person"]["address"]>().rules({
-            street   : "required",
+            street   : "required|min:7",
             building : "required",
             apt      : "required"
         })
@@ -245,16 +265,35 @@ describe("Validation", () => {
                 expect(err.name).toStrictEqual([reqErrObj])
                 expect(err.person).toStrictEqual([{
                     salary  : [reqErrObj],
-                    address : [{apt: [reqErrObj], building: [], street: []}]
+                    address : [{apt: [reqErrObj], building: [], street: [minErrObj]}]
                 }])
             })
+    })
+
+    it("Nested object validation should pass", async () => {
+
+        const userValidation = new Validation<User>()
+        const addressValidation = new Validation<User["person"]["address"]>().rules({
+            street   : "required|min:7",
+            building : "required",
+            apt      : "required"
+        })
+        const personValidation = new Validation<User["person"]>().rules({
+            salary  : "required",
+            address : addressValidation
+        })
+
+        userValidation.rules({
+            name   : "required",
+            person : personValidation
+        })
 
         await userValidation.validate({
             name   : "David",
             person : {
                 salary  : 10,
                 address : {
-                    street   : "Shiraz",
+                    street   : "Shirazz",
                     building : 44,
                     apt      : 10
                 }

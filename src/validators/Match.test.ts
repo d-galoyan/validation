@@ -1,36 +1,77 @@
 import Match from "./Match"
 
-const notValid = {
-    isValid        : false,
-    additionalData : {
-        matchField: "name",
-    }
-}
-
-
-const valid = {
-    isValid        : true,
-    additionalData : {
-        matchField: "name"
-    }
-}
-
 const allData = {
-    name  : "Jhon",
-    name2 : "Jhon2",
-    name3 : "Jhon"
+    name     : "Jhon",
+    name2    : "Jhon2",
+    name3    : "Jhon",
+    name4    : "Foo",
+    stranger : {
+        name : "Jhon",
+        foo  : {
+            name: "Foo"
+        }
+    }
 }
 
-const testMatchRule = "name"
+const cases = [
+    {
+        value     : "Jhon2",
+        matchRule : "name",
+        result    : {
+            isValid        : false,
+            additionalData : {
+                matchField: "name",
+            }
+        }
+    },
+    {
+        value     : "Jhon",
+        matchRule : "name",
+        result    : {
+            isValid        : true,
+            additionalData : {
+                matchField: "name",
+            }
+        }
+    },
+    {
+        value     : "Jhon2",
+        matchRule : "stranger.name",
+        result    : {
+            isValid        : false,
+            additionalData : {
+                matchField: "stranger.name",
+            }
+        }
+    },
+    {
+        value     : "Jhon",
+        matchRule : "stranger.foo.name",
+        result    : {
+            isValid        : false,
+            additionalData : {
+                matchField: "stranger.foo.name"
+            }
+        }
+    },
+    {
+        value     : "Foo",
+        matchRule : "stranger.foo.name",
+        result    : {
+            isValid        : true,
+            additionalData : {
+                matchField: "stranger.foo.name"
+            }
+        }
+    },
+]
 
 describe('Match', () => {
-    it('should not be valid', () => {
-        const MatchValidator = new Match()
-        expect(MatchValidator.validate(allData.name2, testMatchRule, allData)).toStrictEqual(notValid)
-    })
 
-    it('should be valid', () => {
+    it.only("Test Cases", () => {
         const MatchValidator = new Match()
-        expect(MatchValidator.validate(allData.name3, testMatchRule, allData)).toStrictEqual(valid)
+        cases.forEach(testCase => {
+            expect(MatchValidator.validate(testCase.value, testCase.matchRule, allData)).toStrictEqual(testCase.result)
+        })
     })
 })

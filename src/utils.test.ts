@@ -1,4 +1,4 @@
-import {string, hasErrors} from "./utils"
+import {string, hasErrors, getNestedValue} from "./utils"
 
 describe("utils",  () => {
     describe('string.isFalsy', () => {
@@ -40,6 +40,28 @@ describe("utils",  () => {
             const hasErr2 = hasErrors({})
             expect(hasErr2).toBe(false)
 
+        })
+
+        it('GetNestedValue',  () => {
+            const nestedObject = {
+                user: {
+                    person: {
+                        address: {
+                            street : "Baker",
+                            apt    : 12
+                        },
+                        salary: 10
+                    },
+                    name: "David"
+                }
+            }
+
+            const name = getNestedValue("user.name", nestedObject)
+            expect(name).toBe("David")
+            const salary = getNestedValue("user.person.salary", nestedObject)
+            expect(salary).toBe(10)
+            const street = getNestedValue("user.person.address.street", nestedObject)
+            expect(street).toBe("Baker")
         })
     })
 })
