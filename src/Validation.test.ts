@@ -263,10 +263,10 @@ describe("Validation", () => {
             .then(() => expect(true).toBe(false))
             .catch(err => {
                 expect(err.name).toStrictEqual([reqErrObj])
-                expect(err.person).toStrictEqual([{
+                expect(err.person).toStrictEqual({
                     salary  : [reqErrObj],
-                    address : [{apt: [reqErrObj], building: [], street: [minErrObj]}]
-                }])
+                    address : {apt: [reqErrObj], building: [], street: [minErrObj]}
+                })
             })
     })
 

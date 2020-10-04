@@ -27,6 +27,9 @@ describe("utils",  () => {
             const hasErr1 = hasErrors({test: [{}], test1: []})
             expect(hasErr1).toBe(true)
 
+            const hasErr2 = hasErrors({test: [], test1: { asd: [], asd2: [{}]}})
+            expect(hasErr2).toBe(true)
+
         })
 
         it('should return false',  () => {
@@ -40,8 +43,13 @@ describe("utils",  () => {
             const hasErr2 = hasErrors({})
             expect(hasErr2).toBe(false)
 
-        })
+            const hasErr3 = hasErrors({test: [], test1: { asd: [], asd2: []}})
+            expect(hasErr3).toBe(false)
 
+        })
+    })
+
+    describe('GetNestedValue', () => {
         it('GetNestedValue',  () => {
             const nestedObject = {
                 user: {

@@ -1,4 +1,4 @@
-import {Results, Validators} from "./types"
+import {Errors, Validators} from "./types"
 
 export const string = {
     isFalsy(str: string | null | undefined): boolean {
@@ -11,7 +11,12 @@ export const string = {
     }
 }
 
-export const hasErrors = <T>(results: Results<T>) => Object.keys(results).some(fieldName => results[fieldName].length > 0)
+export const hasErrors = <T>(errors: Errors<T>) : boolean => Object.keys(errors).some(fieldName => {
+    if(object.isObject(errors[fieldName])){
+        return hasErrors(errors[fieldName])
+    }
+    return errors[fieldName].length > 0
+})
 
 export const object = {
     copy(obj: Record<string, any>) {
@@ -27,6 +32,9 @@ export const object = {
             // Prevent shallow copies of nested structures like arrays, etc
             object.copy(instance)
         )
+    },
+    isObject(obj : Record<string, any>){
+       return Object.prototype.toString.call(obj) === "[object Object]"
     }
 }
 
@@ -41,7 +49,7 @@ export const cloneValidators = (validators : Validators) : Validators => {
 
 export const getNestedValue = (path : string, allData : Record<string, any>) => {
     return path.split(".").reduce((acc, field) => {
-        if(acc[field] instanceof Object){
+        if(object.isObject(acc[field])){
             acc = acc[field]
         }else {
             return acc[field]

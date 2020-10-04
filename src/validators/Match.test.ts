@@ -68,7 +68,7 @@ const cases = [
 
 describe('Match', () => {
 
-    it.only("Test Cases", () => {
+    it("Test Cases", () => {
         const MatchValidator = new Match()
         cases.forEach(testCase => {
             expect(MatchValidator.validate(testCase.value, testCase.matchRule, allData)).toStrictEqual(testCase.result)

@@ -1,7 +1,7 @@
 import {
   Configs,
   TResultListener,
-  Results,
+  Errors,
   Validators
 } from './types'
 import {cloneValidators, hasErrors, string} from './utils'
@@ -10,8 +10,8 @@ import parseValidationRules from "./parseValidationRules"
 
 class Validation<T> {
 
-  private readonly results: Results<T> = {} as Results<T>
-  private listener: TResultListener<Results<T>> = () => {}
+  private readonly errors: Errors<T> = {} as Errors<T>
+  private listener: TResultListener<Errors<T>> = () => {}
   private validationRules: Record<keyof T, string |  Validation<T[keyof T]>>
   private readonly validators: Validators = cloneValidators(defaultValidators)
   private readonly configs: Configs<T> = {
@@ -48,18 +48,18 @@ class Validation<T> {
     return this
   }
 
-  onResultListener(listener: TResultListener<Results<T>>) : Validation<T> {
+  onResultListener(listener: TResultListener<Errors<T>>) : Validation<T> {
     this.listener = listener
     return this
   }
 
-  validate(data: T, allData ?: T) : Promise<Results<T>> {
+  validate(data: T, allData ?: T) : Promise<Errors<T>> {
     this.data = allData ? allData : data
 
     const parsedValidationRules = parseValidationRules(this.validationRules, this.configs)
     const allPromises = Object.keys(parsedValidationRules).map(async (name) => {
       const value = data[name]
-      this.results[name] = []
+      this.errors[name] = []
 
       if(
           (this.configs.shouldValidateFields[name] && !(await this.configs.shouldValidateFields[name].shouldValidate(data)))
@@ -70,7 +70,9 @@ class Validation<T> {
 
       for (const validatorName of Object.keys(parsedValidationRules[name])) {
         if(parsedValidationRules[name] instanceof Validation){
-          await parsedValidationRules[name].validate(value, this.data).catch((err: any) => this.results[name].push(err))
+          await parsedValidationRules[name].validate(value, this.data).catch((err : Errors<T>) => {
+            this.errors[name] = err
+          })
           break
         }
 
@@ -87,7 +89,7 @@ class Validation<T> {
         const {validator, errMsg : defaultErrMsg} = this.validators[validatorName]
         const {isValid, errMsg = defaultErrMsg, additionalData } = await validator.validate(value, parsedValidationRules[name][validatorName], this.data)
         if (!isValid) {
-          this.results[name].push({
+          this.errors[name].push({
             errMsg,
             additionalData: {
               ...additionalData
@@ -102,13 +104,13 @@ class Validation<T> {
 
     return Promise
         .all(allPromises)
-        .then(() => this.listener(this.results))
-        .then(() => new Promise<Results<T>>((resolve, reject) => {
+        .then(() => this.listener(this.errors))
+        .then(() => new Promise<Errors<T>>((resolve, reject) => {
 
-          if (hasErrors(this.results)) {
-            return reject(this.results)
+          if (hasErrors(this.errors)) {
+            return reject(this.errors)
           }
-          return resolve(this.results)
+          return resolve(this.errors)
         }))
   }
 }

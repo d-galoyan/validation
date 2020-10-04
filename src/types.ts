@@ -7,12 +7,18 @@ export type Configs<T> = {
     shouldValidateFields: Partial<ShouldValidateFields<T>>,
 }
 
-export type TResult = {
+export type TError = {
     errMsg: string,
     additionalData?: {
         [key: string]: string | number,
     },
 }
+
+
+export type Errors<T> = {
+    [key in Extract<keyof T, string>]: TError[] | Errors<T[keyof T]>
+}
+
 
 export type TResultListener<T> = (result: T) => void
 
@@ -25,10 +31,6 @@ export type Validators = {
         validator: Validator,
         errMsg: string,
     },
-}
-
-export type Results<T> = {
-    [key in Extract<keyof T, string>]: TResult[]
 }
 
 export type GlobalValidator = {
