@@ -19,7 +19,6 @@ class Validation<T> {
     omitEmpty            : {},
     shouldValidateFields : {}
   }
-  private data : T
 
   addValidators(validators: Validators) : Validation<T> {
     Object.keys(validators).forEach(validatorName => {
@@ -53,8 +52,8 @@ class Validation<T> {
     return this
   }
 
-  validate(data: T, allData ?: T) : Promise<Errors<T>> {
-    this.data = allData ? allData : data
+  validate(data: T, contextData ?: T) : Promise<Errors<T>> {
+    const allCtxData = contextData ? contextData : data
 
     const parsedValidationRules = parseValidationRules(this.validationRules, this.configs)
     const allPromises = Object.keys(parsedValidationRules).map(async (name) => {
@@ -62,7 +61,7 @@ class Validation<T> {
       this.errors[name] = []
 
       if(
-          (this.configs.shouldValidateFields[name] && !(await this.configs.shouldValidateFields[name].shouldValidate(data)))
+          (this.configs.shouldValidateFields[name] && !(await this.configs.shouldValidateFields[name].shouldValidate(allCtxData)))
           || (this.configs.omitEmpty[name] && !value)
       ){
         return
@@ -70,7 +69,7 @@ class Validation<T> {
 
       for (const validatorName of Object.keys(parsedValidationRules[name])) {
         if(parsedValidationRules[name] instanceof Validation){
-          await parsedValidationRules[name].validate(value, this.data).catch((err : Errors<T>) => {
+          await parsedValidationRules[name].validate(value, allCtxData).catch((err : Errors<T>) => {
             this.errors[name] = err
           })
           break
@@ -87,7 +86,12 @@ class Validation<T> {
         }
 
         const {validator, errMsg : defaultErrMsg} = this.validators[validatorName]
-        const {isValid, errMsg = defaultErrMsg, additionalData } = await validator.validate(value, parsedValidationRules[name][validatorName], this.data)
+        const {
+          isValid,
+          errMsg = defaultErrMsg,
+          additionalData
+        } = await validator.validate(value, parsedValidationRules[name][validatorName], allCtxData)
+
         if (!isValid) {
           this.errors[name].push({
             errMsg,
