@@ -20,6 +20,15 @@ class Validation<T> {
     shouldValidateFields : {}
   }
 
+  constructor() {
+    this.addValidators = this.addValidators.bind(this)
+    this.shouldValidate = this.shouldValidate.bind(this)
+    this.messages = this.messages.bind(this)
+    this.rules = this.rules.bind(this)
+    this.onResultListener = this.onResultListener.bind(this)
+    this.validate = this.validate.bind(this)
+  }
+
   addValidators(validators: Validators) : Validation<T> {
     Object.keys(validators).forEach(validatorName => {
       this.validators[validatorName] = {
