@@ -36,7 +36,7 @@ describe('Min', () => {
     })
 
     it('Should not be valid if toString method not implemented on value ', () => {
-        const notValid2 = {...notValid, errMsg : "Value must implement toString method" }
+        const notValid2 = {...notValid, errMsg: "Value must implement toString method" }
         const MaxValidator = new Min()
         expect(MaxValidator.validate(undefined as any, testMatchRule)).toStrictEqual(notValid2)
         expect(MaxValidator.validate(null as any, testMatchRule)).toStrictEqual(notValid2)

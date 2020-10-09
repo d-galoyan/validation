@@ -1,7 +1,7 @@
 import Validator from "./Validator"
 
 type ToStringable = {
-    toString: () => string
+    toString: () => string,
 }
 
 class Max implements Validator {
@@ -12,17 +12,17 @@ class Max implements Validator {
             data.toString()
         } catch {
             return {
-                isValid: false,
-                additionalData: {
+                isValid        : false,
+                additionalData : {
                     max: max
                 },
-                errMsg : "Value must implement toString method"
+                errMsg: "Value must implement toString method"
             }
         }
 
         return {
-            isValid: data.toString().length <= Number(max),
-            additionalData: {
+            isValid        : data.toString().length <= Number(max),
+            additionalData : {
                 max: max
             }
         }

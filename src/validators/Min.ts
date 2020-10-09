@@ -7,11 +7,11 @@ class Min implements Validator {
             data.toString()
         } catch {
             return {
-                isValid: false,
-                additionalData: {
+                isValid        : false,
+                additionalData : {
                     min
                 },
-                errMsg : "Value must implement toString method"
+                errMsg: "Value must implement toString method"
             }
         }
         return {
