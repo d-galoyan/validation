@@ -1,4 +1,4 @@
-import {Configs, TValidation} from "./types"
+import {Configs, TValidation, ValidationRuleParser} from "./types"
 import Validation from "./Validation"
 
 const parseValidationRules = <T>(validationRules: TValidation<T>, configs: Configs<T>) => {
@@ -21,7 +21,7 @@ const parseValidationRules = <T>(validationRules: TValidation<T>, configs: Confi
             return acc
         }, {})
         return acc
-    }, {})
+    }, {} as ReturnType<ValidationRuleParser<T>>)
 }
 
 export default parseValidationRules

@@ -3,7 +3,7 @@ import {getNestedValue, string} from '../utils'
 
 class Required implements Validator {
 
-    validate(value: string | number, afterColumn: string | undefined, allData: { [key: string]: any }) {
+    validate(value: string | number, afterColumn: string | undefined, allData: Record<string, any>) {
 
         const isValid = !string.isFalsy(value as string)
 

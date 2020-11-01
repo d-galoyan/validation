@@ -19,10 +19,10 @@ export const hasErrors = <T>(errors: Errors<T>) : boolean => Object.keys(errors)
 })
 
 export const object = {
-    copy(obj: Record<string, any>) {
+    copy<T>(obj: T) : T {
         return JSON.parse(JSON.stringify(obj))
     },
-    cloneInstance<T>(instance : T){
+    cloneInstance<T>(instance : T) : T {
         return Object.assign(
             Object.create(
                 // Set the prototype of the new object to the prototype of the instance.
@@ -33,7 +33,7 @@ export const object = {
             object.copy(instance)
         )
     },
-    isObject(obj : Record<string, any>){
+    isObject<T>(obj : T){
        return Object.prototype.toString.call(obj) === "[object Object]"
     }
 }
@@ -47,7 +47,7 @@ export const cloneValidators = (validators : Validators) : Validators => {
     }, {})
 }
 
-export const getNestedValue = (path : string, allData : Record<string, any>) => {
+export const getNestedValue = <T>(path : string, allData : T) : T[keyof T] => {
     return path.split(".").reduce((acc, field) => {
         if(object.isObject(acc[field])){
             acc = acc[field]

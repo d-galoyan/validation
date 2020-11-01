@@ -1,14 +1,12 @@
-type ValidateT = {
+type ValidateT<A = string | number> = {
     readonly isValid: boolean,
     readonly errMsg ?: string,
-    readonly additionalData?: {
-        [key: string]: string | number,
-    },
+    readonly additionalData?: Record<string, A>,
 }
 
-interface Validator {
+interface Validator<T = any> {
 
-    validate(data: any, rules: string | undefined, allData: { [key: string]: any }): ValidateT | Promise<ValidateT>,
+    validate(data: T[keyof T], rules: string | undefined, allData: T): ValidateT | Promise<ValidateT>,
 }
 
 export default Validator

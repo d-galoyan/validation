@@ -2,29 +2,23 @@ import Validator from './validators/Validator'
 import Validation from "./Validation"
 
 export type Configs<T> = {
-    stopOnError: Partial<{ [key in keyof T]: boolean }>,
-    omitEmpty: Partial<{ [key in keyof T]: boolean }>,
+    stopOnError: Partial<Record<keyof T, boolean>>,
+    omitEmpty: Partial<Record<keyof T, boolean>>,
     shouldValidateFields: Partial<ShouldValidateFields<T>>,
 }
 
-export type TError = {
+export type TError<A = string | number> = {
     errMsg: string,
-    additionalData?: {
-        [key: string]: string | number,
-    },
+    additionalData?: Record<string, A>,
 }
-
 
 export type Errors<T> = {
-    [key in Extract<keyof T, string>]: TError[] | Errors<T[keyof T]>
+    [key in keyof T]: TError[] | Errors<T[keyof T]>
 }
-
 
 export type TResultListener<T> = (result: T) => void
 
-export type TValidation<T> = {
-    [key: string]: string | Validation<T[keyof T]>,
-}
+export type TValidation<T> = Record<string, string | Validation<T[keyof T]>>
 
 export type Validators = {
     [key: string]: {
@@ -40,7 +34,9 @@ export type GlobalValidator = {
 }
 
 export type ShouldValidate<T> = {
-    shouldValidate: (allData: T) => boolean,
+    shouldValidate: (allData: T) => boolean | Promise<boolean>,
 }
 
 export type ShouldValidateFields<T> = Partial<Record<keyof T, ShouldValidate<T>>>
+
+export type ValidationRuleParser<T, R = string | Validation<T[keyof T]>> = (rules : Record<keyof T, R>, configs : Configs<T>) => Record<keyof T, R>

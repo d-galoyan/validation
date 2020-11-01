@@ -110,13 +110,19 @@ describe("Validation", () => {
 
     })
 
-    it("Should set listener", () => {
+    it("Should set listener", async () => {
         const validation = new Validation()
-        const testListener = (res: any) => {
-            console.log(res)
-        }
-        validation.onResultListener(testListener)
-        expect(validation["listener"]).toStrictEqual(testListener)
+        const testListener = jest.fn()
+        validation
+            .addResultListener(testListener)
+            .addResultListener(testListener)
+        validation.rules({
+            name     : "required|string",
+            lastname : "required|string",
+            salary   : "int",
+        })
+        await validation.validate(testData)
+        expect(testListener).toBeCalledTimes(2)
     })
 
     it("Should Not fail", async () => {
@@ -138,7 +144,7 @@ describe("Validation", () => {
             salary   : "int",
         })
         const copied = object.copy(testData)
-        copied.salary = ""
+        copied.salary = 0
         await validation.validate(copied)
             .catch((err) => {
                 expect(err.salary).toStrictEqual([intErrObj])

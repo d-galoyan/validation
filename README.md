@@ -3,18 +3,13 @@
 [![NPM version][npm-image]][npm-url]
 
 Simple, extensible library for validation any kind of data , <br/>
-built with open/closed principle in mind.
-
-## Not only Strings 
-
-**You can pass any kind of data, just make sure that validator you choose can parse input.**
+Written in a typescript with 100% test coverage.
 
 ## Installation and Usage
 
-
 Install the library with `npm install v-for-validation` or `yarn add v-for-validation`
 
-#### ES6
+#### Examples
 
 ```javascript
     import {Validation} from 'v-for-validation';
@@ -55,7 +50,7 @@ than additionalData will contain "min" field . Example `
 ```javascript
     const result = {
         min : {
-            errMsg : 'input.must.be.min',
+            errMsg : 'Field should be minimum {{min}} characters',
             additionalData : {
                 min : 8
             }   
@@ -63,7 +58,48 @@ than additionalData will contain "min" field . Example `
     }
 ```
 
-errMsg is returned this way to be easy for further translation.
+## Should Validate+
+
+By method `shouldValidate` you tell validation to be triggered or not.
+
+# Example
+```javascript
+
+    const validation = new Validation()
+    
+    class ShouldValidateName {
+        shouldValidate(allData : UserData){
+            if(allData.role === "Admnin"){
+                return false
+            }   
+            return true
+        }
+    }   
+
+    validation.shouldValidate({ 
+        name : new ShouldValidateName()
+    })
+
+    validation.rules({
+        name : "required"
+    })
+    
+    validation.validate({ name : "" })
+```
+This validation won't generate any error if the `role` field will be  `Admin`  
+
+## Messages
+
+Override default messages by `messages` method
+
+```javascript
+
+    validation.messages({
+        requried : "The field is required, custom message",
+        min      : "Field minumom is not respected"
+    })    
+
+```
 
 ## Overrides
 
@@ -75,7 +111,6 @@ errMsg is returned this way to be easy for further translation.
     })
 ```
 
-
 ## Default Validators
 
 Validators are strings separated with pipes.
@@ -85,6 +120,7 @@ Here is a list of the validators currently available.
 Validator                               | Description
 --------------------------------------- | --------------------------------------
 **_bail_**                        | bail will stop on first error if provided.
+**_omitEmpty_**                   | If provided validation won't be triggered if there is no data.
 **required**                      | check if the string or number is not empty.
 **email**                         | check if the string is an email (example@mail.com).
 **includeCapitalLetters**         | check if the string includes capital letter (a-zA-Z).
@@ -102,7 +138,27 @@ Validator                               | Description
 
 You can also provide your own validator via method.
 ```javascript
-    validation.addValidators(validators)
+    validation.addValidators({
+        myOwnValidator : {
+            validator : new MyOwnValidator(),
+            errMsg    : "Some error message"    
+        }      
+    })
+```
+
+or you can add it globally via `addGlobalValidators` method. 
+
+```javascript
+    
+import { addGlobalValidators } from "v-for-validation"
+
+        addGlobalValidators([
+            {
+                name      : "TestValidator",
+                validator : new TestValidator(),
+                errMsg    : "Test error"
+            }
+        ])
 ```
 
 validators object should be TValidators type.
@@ -116,9 +172,9 @@ validators object should be TValidators type.
         }
     }
 
-    interface IValidator {
+    interface Validator<T = any> {
     
-        validate(data: any, rules: string | undefined, allData: { [key: string]: any }): ValidateT | Promise<ValidateT>;
+        validate(data: T[keyof T], rules: string | undefined, allData: T): ValidateT | Promise<ValidateT>,
     }
 
     type TValidators = {
@@ -180,7 +236,6 @@ In general, we follow the "fork-and-pull" Git workflow.
 2. Clone the project to your own machine
 3. Work on your fork
     1. Make your changes and additions
-        - Most of your changes should be focused on `src/` and `src/rules` folders and/or `README.md`. 
     2. Change or add tests if needed
     3. Run tests and make sure they pass
     4. Add changes to README.md if needed
@@ -189,10 +244,6 @@ In general, we follow the "fork-and-pull" Git workflow.
 6. Repeat step 3(3) above
 7. Push your work back up to your fork
 8. Submit a Pull request so that we can review your changes
-
-## Tests
-
-Currently there is no test , but they will be in the future. 
 
 ## Maintainer
 
