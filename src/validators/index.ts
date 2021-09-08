@@ -10,7 +10,7 @@ import Min from "./Min"
 import Max from "./Max"
 import OnlyAlpha from "./OnlyAlpha"
 import OnlyInteger from "./OnlyInteger"
-import {GlobalValidator} from "../types";
+import {GlobalValidator} from "../types"
 
 const defaultValidators : GlobalValidator[] = [
     {
