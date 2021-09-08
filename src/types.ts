@@ -20,13 +20,6 @@ export type TResultListener<T> = (result: T) => void
 
 export type TValidation<T> = Record<string, string | Validation<T[keyof T]>>
 
-export type Validators = {
-    [key: string]: {
-        validator: Validator,
-        errMsg: string,
-    },
-}
-
 export type GlobalValidator = {
     name: string,
     validator: Validator,
@@ -39,4 +32,4 @@ export type ShouldValidate<T> = {
 
 export type ShouldValidateFields<T> = Partial<Record<keyof T, ShouldValidate<T>>>
 
-export type ValidationRuleParser<T, R = string | Validation<T[keyof T]>> = (rules : Record<keyof T, R>, configs : Configs<T>) => Record<keyof T, string | Validation<T[keyof T]>>
+export type ValidationRuleParser<T, R = string | Validation<T[keyof T]>> = (rules: Record<keyof T, R>, configs: Configs<T>) => Record<keyof T, string | Validation<T[keyof T]>>

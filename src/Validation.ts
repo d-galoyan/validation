@@ -2,7 +2,8 @@ import {
   Configs,
   TResultListener,
   Errors,
-  Validators, ValidationRuleParser
+  ValidationRuleParser,
+  GlobalValidator
 } from './types'
 import {cloneValidators, hasErrors, string} from './utils'
 import defaultValidators from "./validators"
@@ -10,10 +11,9 @@ import parseValidationRules from "./parseValidationRules"
 
 class Validation<T> {
 
-  private readonly errors: Errors<T> = {} as Errors<T>
   private readonly listeners: TResultListener<Errors<T>>[] = []
   private validationRules: Record<keyof T, string |  Validation<T[keyof T]>>
-  private readonly validators: Validators = cloneValidators(defaultValidators)
+  private readonly validators: GlobalValidator[] = cloneValidators(defaultValidators)
   private readonly configs: Configs<T> = {
     stopOnError          : {},
     omitEmpty            : {},
@@ -30,12 +30,12 @@ class Validation<T> {
     this.validationRuleParser = this.validationRuleParser.bind(this)
   }
 
-  addValidators(validators: Validators) : Validation<T> {
-    Object.keys(validators).forEach(validatorName => {
-      this.validators[validatorName] = {
-        validator : validators[validatorName].validator,
-        errMsg    : validators[validatorName].errMsg
-      }
+  addValidators(validators: GlobalValidator[]) : Validation<T> {
+    validators.forEach(v => {
+      const  {name, validator, errMsg} = v
+      this.validators.push({
+        name,validator, errMsg
+      })
     })
     return this
   }
@@ -45,9 +45,12 @@ class Validation<T> {
     return this
   }
 
-  messages(messages: {[key in keyof Validators] : string}) : Validation<T> {
+  messages(messages: Record<string, string>) : Validation<T> {
     Object.keys(messages).forEach(validatorName => {
-      this.validators[validatorName].errMsg = messages[validatorName]
+      const validator = this.validators.find(v => v.name === validatorName)
+      if(validator){
+        validator.errMsg = messages[validatorName]
+      }
     })
     return this
   }
@@ -63,12 +66,14 @@ class Validation<T> {
   }
 
   validate(data: T, contextData ?: T) : Promise<Errors<T>> {
-    const allCtxData = contextData ? contextData : data
 
+    const allCtxData = contextData ? contextData : data
+    const errors = {} as Errors<T>
     const parsedValidationRules = this.validationRuleParser(this.validationRules, this.configs)
     const allPromises = Object.keys(parsedValidationRules).map(async (name) => {
       const value = data[name]
-      this.errors[name] = []
+
+      errors[name] = []
 
       if(
           (this.configs.shouldValidateFields[name] && !(await this.configs.shouldValidateFields[name].shouldValidate(allCtxData)))
@@ -80,7 +85,7 @@ class Validation<T> {
       for (const validatorName of Object.keys(parsedValidationRules[name])) {
         if(parsedValidationRules[name] instanceof Validation){
           await parsedValidationRules[name].validate(value, allCtxData).catch((err : Errors<T>) => {
-            this.errors[name] = err
+            errors[name] = err
           })
           break
         }
@@ -89,11 +94,13 @@ class Validation<T> {
           return
         }
 
-        if (!this.validators[validatorName]) {
+        const validatorObj = this.validators.find(v => v.name === validatorName)
+
+        if (!validatorObj) {
           throw new RangeError(`Please provide existing validator name for ${name}. ${validatorName} doesn't exists!`)
         }
 
-        const {validator, errMsg : defaultErrMsg} = this.validators[validatorName]
+        const {validator, errMsg : defaultErrMsg} = validatorObj
         const {
           isValid,
           errMsg = defaultErrMsg,
@@ -101,7 +108,7 @@ class Validation<T> {
         } = await validator.validate(value, parsedValidationRules[name][validatorName], allCtxData)
 
         if (!isValid) {
-          this.errors[name].push({ errMsg, additionalData })
+          errors[name].push({ errMsg, additionalData })
           if (this.configs.stopOnError[name]) {
             return
           }
@@ -111,13 +118,13 @@ class Validation<T> {
 
     return Promise
         .all(allPromises)
-        .then(() => this.listeners.forEach(listener => listener(this.errors)))
+        .then(() => this.listeners.forEach(listener => listener(errors)))
         .then(() => new Promise<Errors<T>>((resolve, reject) => {
 
-          if (hasErrors(this.errors)) {
-            return reject(this.errors)
+          if (hasErrors(errors)) {
+            return reject(errors)
           }
-          return resolve(this.errors)
+          return resolve(errors)
         }))
   }
 }

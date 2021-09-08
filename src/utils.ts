@@ -1,4 +1,4 @@
-import {Errors, Validators} from "./types"
+import {Errors, GlobalValidator} from "./types"
 
 export const string = {
     isFalsy(str: string | null | undefined): boolean {
@@ -38,13 +38,16 @@ export const object = {
     }
 }
 
-export const cloneValidators = (validators : Validators) : Validators => {
-    return Object.keys(validators).reduce((clone, validatorName ) => {
-        clone[validatorName] = {}
-        clone[validatorName].validator = object.cloneInstance(validators[validatorName].validator)
-        clone[validatorName].errMsg = validators[validatorName].errMsg
+export const cloneValidators = (validators : GlobalValidator[]) : GlobalValidator[] => {
+    return validators.reduce((clone, v ) => {
+        const {name, errMsg, validator} = v
+        clone.push({
+            name,
+            validator: object.cloneInstance(validator),
+            errMsg
+        })
         return clone
-    }, {})
+    }, [] as GlobalValidator[])
 }
 
 export const getNestedValue = <T>(path : string, allData : T) : T[keyof T] => {

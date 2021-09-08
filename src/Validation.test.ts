@@ -50,13 +50,12 @@ type User = {
 describe("Validation", () => {
     it("Should add validator", () => {
         const validation = new Validation()
-        validation.addValidators({
-            TestValidator: {
+        validation.addValidators([{
+                name      : "TestValidator",
                 validator : new TestValidator(),
                 errMsg    : "error message"
-            }
-        })
-        expect(validation["validators"]["TestValidator"]).toBeDefined()
+        }])
+        expect(validation["validators"].find(v => v.name === "TestValidator")).toBeDefined()
     })
 
     it("Default Messages should be overridden", async () => {
@@ -71,12 +70,8 @@ describe("Validation", () => {
         })
             .then(() => expect(true).toBe(false))
             .catch(err => {
-                expect(err.name).toStrictEqual([
-                    {
-                        errMsg         : 'some int error message',
-                        additionalData : {}
-                    }
-                ])
+                expect(err.name[0].errMsg).toBe('some int error message')
+                expect(err.name[0].additionalData).toStrictEqual({})
             })
 
     })
@@ -84,12 +79,11 @@ describe("Validation", () => {
     it("Validator error message should be used, instead of default one", async () => {
         const validation = new Validation()
         validation
-            .addValidators({
-                TestValidator: {
+            .addValidators([{
+                    name      : "TestValidator",
                     validator : new TestValidator(false),
                     errMsg    : "error message"
-                }
-            })
+            }])
             .messages({
                 TestValidator: "some int error message",
             }).rules({
@@ -100,7 +94,7 @@ describe("Validation", () => {
         })
             .then(() => expect(true).toBe(false))
             .catch(err => {
-                expect(err.name).toStrictEqual([
+                expect(err.name).toMatchObject([
                     {
                         errMsg         : 'Internal error message',
                         additionalData : {}
