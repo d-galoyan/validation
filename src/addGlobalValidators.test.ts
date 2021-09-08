@@ -20,7 +20,7 @@ describe('addGlobalValidators', () => {
                 errMsg    : "Test error"
             }
         ])
-        expect(defaultValidators["TestValidator"]).toBeDefined()
+        expect(defaultValidators.find(v => v.name === "TestValidator")).toBeDefined()
     })
 
 })
