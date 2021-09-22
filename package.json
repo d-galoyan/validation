@@ -1,6 +1,6 @@
 {
   "name": "v-for-validation",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Simple validation written in typescript",
   "main": "dist/index",
   "types": "dist/index",

@@ -31,7 +31,7 @@ class Validation<T> {
   }
 
   addValidators(validators: GlobalValidator[]) : Validation<T> {
-    const filteredValidators = validators.filter(v => !validators.find(val => val.name === v.name))
+    const filteredValidators = this.validators.filter(v => !validators.find(val => val.name === v.name))
     validators.forEach(v => {
       const  {name, validator, errMsg} = v
       filteredValidators.push({
