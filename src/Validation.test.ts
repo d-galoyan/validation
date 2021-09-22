@@ -76,6 +76,24 @@ describe("Validation", () => {
 
     })
 
+    it("Default Messages should not be overridden", async () => {
+        const validation = new Validation()
+        validation.messages({
+            intsss: "some int error message",
+        }).rules({
+            name: "int"
+        })
+        await validation.validate({
+            name: "asd"
+        })
+            .then(() => expect(true).toBe(false))
+            .catch(err => {
+                expect(err.name[0].errMsg).toBe('must.be.only.number')
+                expect(err.name[0].additionalData).toStrictEqual({})
+            })
+
+    })
+
     it("Validator error message should be used, instead of default one", async () => {
         const validation = new Validation()
         validation

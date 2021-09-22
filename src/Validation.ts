@@ -13,7 +13,7 @@ class Validation<T> {
 
   private readonly listeners: TResultListener<Errors<T>>[] = []
   private validationRules: Record<keyof T, string |  Validation<T[keyof T]>>
-  private readonly validators: GlobalValidator[] = cloneValidators(defaultValidators)
+  private validators: GlobalValidator[] = cloneValidators(defaultValidators)
   private readonly configs: Configs<T> = {
     stopOnError          : {},
     omitEmpty            : {},
@@ -31,12 +31,14 @@ class Validation<T> {
   }
 
   addValidators(validators: GlobalValidator[]) : Validation<T> {
+    const filteredValidators = validators.filter(v => !validators.find(val => val.name === v.name))
     validators.forEach(v => {
       const  {name, validator, errMsg} = v
-      this.validators.push({
+      filteredValidators.push({
         name,validator, errMsg
       })
     })
+    this.validators = filteredValidators
     return this
   }
 
