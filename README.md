@@ -103,12 +103,15 @@ Override default messages by `messages` method
 
 ## Overrides
 
- You can override translations for specific validators.
+ You can override translations for specific validators globally.
  
  ```javascript
-    validation.overrides({
-        min : "must.be.other.translation"
-    })
+    overrideErrorMessages([
+        {
+            name : 'min',
+            errMsg : "must.be.other.translation"
+        }
+    ])
 ```
 
 ## Default Validators
@@ -138,12 +141,13 @@ Validator                               | Description
 
 You can also provide your own validator via method.
 ```javascript
-    validation.addValidators({
-        myOwnValidator : {
+    validation.addValidators([
+        {
+            name : 'myOwnValidator',
             validator : new MyOwnValidator(),
             errMsg    : "Some error message"    
         }      
-    })
+    ])
 ```
 
 or you can add it globally via `addGlobalValidators` method. 

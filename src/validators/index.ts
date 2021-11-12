@@ -16,62 +16,62 @@ const defaultValidators : GlobalValidator[] = [
     {
         name      : 'required',
         validator : new Required(),
-        errMsg    : 'must.not.be.empty'
+        errMsg    : '{field} is required'
     },
     {
         name      : 'email',
         validator : new Email(),
-        errMsg    : 'must.be.email'
+        errMsg    : 'Email format is wrong'
     },
     {
         name      : 'match',
         validator : new Match(),
-        errMsg    : 'must.match'
+        errMsg    : '{field} does not match with the {matchedField}'
     },
     {
         name      : 'includeCapitalLetter',
         validator : new IncludeCapitalLetter(),
-        errMsg    : 'must.contain.cap.letter'
+        errMsg    : '{field} should include capital letters'
     },
     {
         name      : 'includeLowercaseLetter',
         validator : new IncludeLowercaseLetter(),
-        errMsg    : 'must.contain.low.letter'
+        errMsg    : '{field} should include lowercase letters'
     },
     {
         name      : "includeNumber",
         validator : new IncludeNumber(),
-        errMsg    : 'must.contain.number'
+        errMsg    : '{field} should include at least one number'
     },
     {
         name      : "includeSpecialChar",
         validator : new IncludeSpecialChar(),
-        errMsg    : 'must.contain.special.char'
+        errMsg    : '{field} should include at least one special character'
     },
     {
         name      : "length",
         validator : new Length(),
-        errMsg    : 'must.be.between'
+        errMsg    : '{field} length should be between {min} and {max}'
     },
     {
         name      : "min",
         validator : new Min(),
-        errMsg    : 'must.be.min'
+        errMsg    : '{field} length should be minimum {min}'
     },
     {
         name      : "max",
         validator : new Max(),
-        errMsg    : 'must.be.max'
+        errMsg    : '{field} length should be maximum {max}'
     },
     {
         name      : "string",
         validator : new OnlyAlpha(),
-        errMsg    : 'must.be.only.string'
+        errMsg    : '{field} should include only alpha characters'
     },
     {
         name      : "int",
         validator : new OnlyInteger(),
-        errMsg    : 'must.be.only.number'
+        errMsg    : '{field} should include only integers'
     },
 ]
 

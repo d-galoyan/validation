@@ -1,27 +1,11 @@
 import Validator from "./Validator"
 
-type ToStringable = {
-    toString: () => string,
-}
-
 class Max implements Validator {
 
-    validate(data: ToStringable, max: string) {
-
-        try {
-            data.toString()
-        } catch {
-            return {
-                isValid        : false,
-                additionalData : {
-                    max: max
-                },
-                errMsg: "Value must implement toString method"
-            }
-        }
+    validate(data: string | number, max: string) {
 
         return {
-            isValid        : data.toString().length <= Number(max),
+            isValid        : `${data}`.length <= Number(max),
             additionalData : {
                 max: max
             }

@@ -19,17 +19,17 @@ const testData = {
 }
 
 const reqErrObj = {
-    errMsg         : "must.not.be.empty",
+    errMsg         : "{field} is required",
     additionalData : {}
 }
 
 const intErrObj = {
-    errMsg         : 'must.be.only.number',
+    errMsg         : '{field} should include only integers',
     additionalData : {}
 }
 
 const minErrObj = {
-    errMsg         : 'must.be.min',
+    errMsg         : '{field} length should be minimum {min}',
     additionalData : {
         min: "7"
     }
@@ -88,7 +88,7 @@ describe("Validation", () => {
         })
             .then(() => expect(true).toBe(false))
             .catch(err => {
-                expect(err.name[0].errMsg).toBe('must.be.only.number')
+                expect(err.name[0].errMsg).toBe('{field} should include only integers')
                 expect(err.name[0].additionalData).toStrictEqual({})
             })
 

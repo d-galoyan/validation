@@ -22,7 +22,7 @@ class Required implements Validator {
             // getting values inside brackets
             const valueInsideBrackets = regExp.exec(afterColumn)
             // Here we are splitting values by comma, and checking if any of required values
-            // equal to actual input value.If yes , than the field is required.
+            // equal to actual input value.If yes , then the field is required.
 
             const isValueMatch =
                 valueInsideBrackets
