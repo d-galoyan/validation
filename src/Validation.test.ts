@@ -3,10 +3,12 @@ import Validator from "./validators/Validator"
 import {object} from "./utils"
 
 class TestValidator implements Validator {
-    isValid : boolean
+    isValid: boolean
+
     constructor(pass ?: boolean) {
         this.isValid = pass === undefined ? true : pass
     }
+
     validate() {
         return {isValid: this.isValid, errMsg: "Internal error message"}
     }
@@ -51,9 +53,9 @@ describe("Validation", () => {
     it("Should add validator", () => {
         const validation = new Validation()
         validation.addValidators([{
-                name      : "TestValidator",
-                validator : new TestValidator(),
-                errMsg    : "error message"
+            name      : "TestValidator",
+            validator : new TestValidator(),
+            errMsg    : "error message"
         }])
         expect(validation["validators"].find(v => v.name === "TestValidator")).toBeDefined()
     })
@@ -81,10 +83,11 @@ describe("Validation", () => {
         validation.messages({
             intsss: "some int error message",
         }).rules({
-            name: "int"
+            name: "int",
         })
+
         await validation.validate({
-            name: "asd"
+            name: "asd",
         })
             .then(() => expect(true).toBe(false))
             .catch(err => {
@@ -94,13 +97,32 @@ describe("Validation", () => {
 
     })
 
+    it("Should throw error", async () => {
+        const validation = new Validation()
+        validation.rules({
+            name     : "int",
+            sureName : 'int|min:10'
+        })
+
+        await validation.validate({
+            name     : "asd",
+            sureName : ['David', 1],
+        })
+            .then(() => expect(true).toBe(false))
+            .catch(err => {
+                expect(err.name[0].errMsg).toBe('{field} should include only integers')
+                expect(err.sureName[0][0].errMsg).toBe('{field} should include only integers')
+                expect(err.sureName[1].length).toBe(1)
+            })
+    })
+
     it("Validator error message should be used, instead of default one", async () => {
         const validation = new Validation()
         validation
             .addValidators([{
-                    name      : "TestValidator",
-                    validator : new TestValidator(false),
-                    errMsg    : "error message"
+                name      : "TestValidator",
+                validator : new TestValidator(false),
+                errMsg    : "error message"
             }])
             .messages({
                 TestValidator: "some int error message",
@@ -237,6 +259,21 @@ describe("Validation", () => {
             })
     })
 
+    it("shout stop on array error", async () => {
+        const validation = new Validation()
+        validation.rules({
+            name: "bail|required|int"
+        })
+        await validation.validate({ name: ['', '']})
+            .then(() => expect(true).toBe(false))
+            .catch(err => {
+                expect(err.name[0][0].errMsg).toBeDefined()
+                expect(err.name[0][1]).toBeUndefined()
+                expect(err.name[1][0].errMsg).toBeDefined()
+                expect(err.name[1][1]).toBeUndefined()
+            })
+    })
+
     it("shout to not stop on error", async () => {
         const validation = new Validation()
         validation.rules({
@@ -319,5 +356,79 @@ describe("Validation", () => {
         })
             .then(() => expect(true).toBe(true))
             .catch(() => expect(true).toBe(false))
+    })
+
+    it("Should Not Validate array value", async () => {
+
+        const validation = new Validation()
+
+        validation.rules({
+            name    : "required",
+            address : 'omitEmpty|min:4'
+        })
+
+        try {
+            await validation.validate({
+                name    : "David",
+                address : ['', '']
+            })
+
+        } catch (e) {
+            expect(true).toBe(false)
+        }
+    })
+
+    it("Should Stop on error", async () => {
+
+        const validation = new Validation()
+
+        validation.rules({
+            name: 'bail|min:4|int'
+        })
+
+        try {
+            await validation.validate({
+                name: "Dav",
+            })
+
+        } catch (e) {
+            expect(e.name[0].errMsg).toBeDefined()
+            expect(e.name[1]).toBeUndefined()
+        }
+
+        const validation2 = new Validation()
+
+        validation2.rules({
+            name: 'min:4|int'
+        })
+
+        try {
+            await validation2.validate({
+                name: "Dav",
+            })
+
+        } catch (e) {
+            expect(e.name[0].errMsg).toBeDefined()
+            expect(e.name[1].errMsg).toBeDefined()
+        }
+    })
+
+    it("Should show both errors", async () => {
+
+        const validation = new Validation()
+
+        validation.rules({
+            name: 'min:4|int'
+        })
+
+        try {
+            await validation.validate({
+                name: "Dav",
+            })
+
+        } catch (e) {
+            expect(e.name[0].errMsg).toBeDefined()
+            expect(e.name[1].errMsg).toBeDefined()
+        }
     })
 })

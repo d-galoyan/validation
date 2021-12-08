@@ -1,4 +1,4 @@
-import {string, hasErrors, getNestedValue} from "./utils"
+import {string, hasErrors, getNestedValue, shouldNotValidate} from "./utils"
 
 describe("utils",  () => {
     describe('string.isFalsy', () => {
@@ -30,6 +30,9 @@ describe("utils",  () => {
             const hasErr2 = hasErrors({test: [], test1: { asd: [], asd2: [{}]}})
             expect(hasErr2).toBe(true)
 
+            const hasErr3 = hasErrors({test: [[{}], []]})
+            expect(hasErr3).toBe(true)
+
         })
 
         it('should return false',  () => {
@@ -45,6 +48,9 @@ describe("utils",  () => {
 
             const hasErr3 = hasErrors({test: [], test1: { asd: [], asd2: []}})
             expect(hasErr3).toBe(false)
+
+            const hasErr4 = hasErrors({test: [[]]})
+            expect(hasErr4).toBe(false)
 
         })
     })
@@ -70,6 +76,52 @@ describe("utils",  () => {
             expect(salary).toBe(10)
             const street = getNestedValue("user.person.address.street", nestedObject)
             expect(street).toBe("Baker")
+        })
+    })
+
+    describe('shouldNotValidate', () => {
+        it('Should return truthy',  async () => {
+            const validate = await shouldNotValidate(
+                'name',
+                '',
+                {
+                    stopOnError          : {},
+                    omitEmpty            : {},
+                    shouldValidateFields : {}
+                },
+                { name: ''})
+
+            expect(validate).toBeUndefined()
+
+            const validate2 = await shouldNotValidate(
+                'name',
+                '',
+                {
+                    stopOnError          : {},
+                    omitEmpty            : {},
+                    shouldValidateFields : {
+                        name: {
+                            shouldValidate: async () => false
+                        }
+                    }
+                },
+                { name: ''})
+            expect(validate2).toBe(true)
+
+            const validate3 = await shouldNotValidate(
+                'name',
+                '',
+                {
+                    stopOnError          : {},
+                    omitEmpty            : {},
+                    shouldValidateFields : {
+                        name: {
+                            shouldValidate: async () => true
+                        }
+                    }
+                },
+                { name: ''})
+            expect(validate3).toBeFalsy()
         })
     })
 })
