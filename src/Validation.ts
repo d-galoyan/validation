@@ -78,7 +78,7 @@ class Validation<T> {
 
             errors[name] = []
 
-            if (Array.isArray(value) && this.configs.validateEachArrayItem) {
+            if (Array.isArray(value) && this.configs.validateEachArrayItem[name]) {
                 for (const [i, v] of value.entries()) {
                     errors[name][i] = []
 

@@ -101,7 +101,7 @@ describe("Validation", () => {
         const validation = new Validation()
         validation.rules({
             name     : "int",
-            sureName : 'int|min:10'
+            sureName : 'validateEachArrayItem|int|min:10'
         })
 
         await validation.validate({
@@ -262,7 +262,7 @@ describe("Validation", () => {
     it("shout stop on array error", async () => {
         const validation = new Validation()
         validation.rules({
-            name: "bail|required|int"
+            name: "bail|validateEachArrayItem|required|int"
         })
         await validation.validate({ name: ['', '']})
             .then(() => expect(true).toBe(false))
@@ -364,7 +364,7 @@ describe("Validation", () => {
 
         validation.rules({
             name    : "required",
-            address : 'omitEmpty|min:4'
+            address : 'omitEmpty|validateEachArrayItem|min:4'
         })
 
         try {
