@@ -17,6 +17,11 @@ const parseValidationRules = <T>(validationRules: TValidation<T>, configs: Confi
                 configs.omitEmpty[fieldName] = true
                 return acc
             }
+
+            if (parts[0] === 'validateEachArrayItem') {
+                configs.validateEachArrayItem[fieldName] = true
+                return acc
+            }
             acc[parts[0]] = parts[1]
             return acc
         }, {})

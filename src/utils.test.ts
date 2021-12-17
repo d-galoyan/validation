@@ -85,9 +85,10 @@ describe("utils",  () => {
                 'name',
                 '',
                 {
-                    stopOnError          : {},
-                    omitEmpty            : {},
-                    shouldValidateFields : {}
+                    stopOnError           : {},
+                    omitEmpty             : {},
+                    shouldValidateFields  : {},
+                    validateEachArrayItem : {}
                 },
                 { name: ''})
 
@@ -97,9 +98,10 @@ describe("utils",  () => {
                 'name',
                 '',
                 {
-                    stopOnError          : {},
-                    omitEmpty            : {},
-                    shouldValidateFields : {
+                    stopOnError           : {},
+                    omitEmpty             : {},
+                    validateEachArrayItem : {},
+                    shouldValidateFields  : {
                         name: {
                             shouldValidate: async () => false
                         }
@@ -112,9 +114,10 @@ describe("utils",  () => {
                 'name',
                 '',
                 {
-                    stopOnError          : {},
-                    omitEmpty            : {},
-                    shouldValidateFields : {
+                    stopOnError           : {},
+                    omitEmpty             : {},
+                    validateEachArrayItem : {},
+                    shouldValidateFields  : {
                         name: {
                             shouldValidate: async () => true
                         }

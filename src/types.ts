@@ -4,6 +4,7 @@ import Validation from "./Validation"
 export type Configs<T> = {
     stopOnError: Partial<Record<keyof T, boolean>>,
     omitEmpty: Partial<Record<keyof T, boolean>>,
+    validateEachArrayItem: Partial<Record<keyof T, boolean>>,
     shouldValidateFields: Partial<ShouldValidateFields<T>>,
 }
 

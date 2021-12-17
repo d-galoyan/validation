@@ -15,9 +15,10 @@ class Validation<T> {
     private validationRules: Record<keyof T, string | Validation<T[keyof T]>>
     private validators: GlobalValidator[] = cloneValidators(defaultValidators)
     private readonly configs: Configs<T> = {
-        stopOnError          : {},
-        omitEmpty            : {},
-        shouldValidateFields : {}
+        stopOnError           : {},
+        omitEmpty             : {},
+        shouldValidateFields  : {},
+        validateEachArrayItem : {}
     }
 
     constructor(private readonly validationRuleParser: ValidationRuleParser<T> = parseValidationRules) {
@@ -77,7 +78,7 @@ class Validation<T> {
 
             errors[name] = []
 
-            if (Array.isArray(value)) {
+            if (Array.isArray(value) && this.configs.validateEachArrayItem) {
                 for (const [i, v] of value.entries()) {
                     errors[name][i] = []
 

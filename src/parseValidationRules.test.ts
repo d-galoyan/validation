@@ -28,6 +28,16 @@ describe('parseValidationRules', () => {
         expect(copiedConfigs.omitEmpty).toStrictEqual({name: true})
     })
 
+    it('should set configs validateEachArrayItem ', () => {
+        const testRulesObj = {
+            name     : "validateEachArrayItem|required",
+            lastname : "min:8"
+        }
+        const copiedConfigs = object.copy(configs)
+        parseValidationRules(testRulesObj, copiedConfigs)
+        expect(copiedConfigs.validateEachArrayItem).toStrictEqual({name: true})
+    })
+
     it('should parse correctly', () => {
         const testRulesObj = {
             name     : "required|min:9|max:16|string|testRule",
